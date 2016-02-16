@@ -18,4 +18,5 @@
 ### 使用
 后台可直接输入地址添加内容，可同时添加多个地址，或者使用上面的Shortcode
 
-<img class="aligncenter" src="https://static.fatesinger.com/wp-douban-ui.jpg" alt="" width="803" height="498" />
+![](https://static.fatesinger.com/wp-douban-ui.jpg)
+
