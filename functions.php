@@ -226,20 +226,20 @@ if($cache) return $cache;
 
 if( $type == 'movie'){
 
-$link = "http://api.douban.com/v2/movie/subject/".$id;
+$link = "https://api.douban.com/v2/movie/subject/".$id;
 
 } elseif ( $type == 'photos' ){
-	$link = "http://api.douban.com/v2/album/" . $id ."/photos";
+	$link = "https://api.douban.com/v2/album/" . $id ."/photos";
 
 } elseif ( $type == 'album' ){
-	$link = "http://api.douban.com/v2/album/" . $id;
+	$link = "https://api.douban.com/v2/album/" . $id;
 
 } elseif ( $type == 'book' ){
-	$link = "http://api.douban.com/v2/book/" . $id;
+	$link = "https://api.douban.com/v2/book/" . $id;
 
 } else{
 
-$link = "http://api.douban.com/v2/music/".$id;
+$link = "https://api.douban.com/v2/music/".$id;
 }
 delete_transient($cache_key);
 $ch=@curl_init($link);
