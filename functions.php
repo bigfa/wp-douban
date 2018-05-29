@@ -166,6 +166,27 @@ function display_music_detail($id){
 }
 
 
+function wpd_get_post_image($post_id) {
+
+        $content         =  get_post_field('post_content', $post_id);
+        $content         = apply_filters('the_content', $content);
+        $defaltthubmnail = get_template_directory_uri() . '/build/images/default.jpeg';
+        preg_match_all('/<img.*?(?: |\\t|\\r|\\n)?src=[\'"]?(.+?)[\'"]?(?:(?: |\\t|\\r|\\n)+.*?)?>/sim', $content, $strResult, PREG_PATTERN_ORDER);
+        $n = count($strResult[1]);
+        if ($n > 0) {
+            $output = $strResult[1][0];
+        } else {
+            $output = $defaltthubmnail;
+        }
+    return $output;
+}
+
+function get_movie_image( $id ) {
+    $data = get_movie_detail($id,$type = 'movie');
+    $image = wpd_save_images($id . 'large' ,$data['images']['large']);
+    return $image;
+}
+
 function display_movie_detail($id){
 
 	$data = get_movie_detail($id,$type = 'movie');
@@ -213,6 +234,7 @@ function display_movie_detail($id){
 	$output .= '<br>年份: ' . $data["year"] .'</div></div></div></div>';
 	return $output;
 }
+
 
 function get_movie_detail($id,$type){
 

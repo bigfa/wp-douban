@@ -5,6 +5,14 @@
 图片内容缓存到本地解决豆瓣防盗链。
 
 读取API数据缓存时间为1个月。
+
+### 调用电影封面
+
+使用函数`get_movie_image($id)`,id为豆瓣电影数字id
+
+使用插件内置的缩略图函数`wpd_get_post_image($id)`,id为文章id
+
+
 ### Shortcode
 相册展示
 <pre data-type="shortcode">[douban id="24043518" type="album"]</pre>

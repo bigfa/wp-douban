@@ -3,7 +3,7 @@
 Plugin Name: WP-Douban
 Plugin URI: http://fatesinger.com/74915
 Description: 豆瓣内容列表展示
-Version: 2.0.0
+Version: 2.0.1
 Author: Bigfa
 Author URI: http://fatesinger.com
 */
