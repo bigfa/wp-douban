@@ -109,7 +109,7 @@ function display_book_detail($id){
 	$output .= '<div class="title"><a href="'. $data["alt"] .'" class="cute" target="_blank" rel="external nofollow">'. $data["title"] .'</a></div>';
 	$output .= '<div class="rating"><span class="allstardark"><span class="allstarlight" style="width:' . $data["rating"]["average"]*10 . '%"></span></span><span class="rating_nums"> ' . $data["rating"]["average"]. ' </span><span>(' . $data["rating"]["numRaters"]. '人评价)</span></div>';
 	$output .= '<div class="abstract">作者 : ';
-	$authors = $data["author"];
+	$authors = array($data["author"]);
 	foreach ($authors as $key=>$author){
 		$output .= $author;
 		if($key != count($authors) - 1){
@@ -121,7 +121,7 @@ function display_book_detail($id){
 	
 	$output .= $data["pubdate"] .'<br>标签 : ';
 	
-	$tags = $data["tags"];
+	$tags = array($data["tags"]);
 	foreach ($tags as $key=>$tag){
 		$output .= $tag['name'];
 		if($key != count($tags) - 1){
@@ -142,7 +142,7 @@ function display_music_detail($id){
 	$output .= '<div class="title"><a href="'. $data["alt"] .'" class="cute" target="_blank" rel="external nofollow">'. $data["title"] .'</a></div>';
 	$output .= '<div class="rating"><span class="allstardark"><span class="allstarlight" style="width:' . $data["rating"]["average"]*10 . '%"></span></span><span class="rating_nums"> ' . $data["rating"]["average"]. ' </span><span>(' . $data["rating"]["numRaters"]. '人评价)</span></div>';
 	$output .= '<div class="abstract">表演者 : ';
-	$authors = $data["author"];
+	$authors = array($data["author"]);
 	foreach ($authors as $key=>$author){
 		$output .= $author['name'];
 		if($key != count($authors) - 1){
