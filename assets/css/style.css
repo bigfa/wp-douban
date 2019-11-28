@@ -1,0 +1,89 @@
+.allstardark{
+  position: relative;
+  color: #f99b01;
+  height: 16px;
+  width: 80px;
+  background-repeat:repeat;
+  background-image: url('star.svg');
+  background-size: auto 100%;
+  margin-right: 5px;
+}
+
+.allstarlight {
+  position: absolute;
+  left: 0;
+  color: #f99b01;
+  height: 16px;
+  overflow: hidden;
+  background-repeat:repeat;
+  background-image: url('star-fill.svg');
+  background-size: auto 100%;
+}
+
+.doulist-album .abstract{
+  margin:7px 0 12px;
+  font-size:14px;
+}
+
+.doulist-album .title {
+  font-size: 18px;
+}
+
+.doulist-item{
+  margin:30px 0;
+  color: #666;
+  border: 1px solid #eee;
+  border-radius: 5px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+.doulist-subject, .doulist-album{
+  line-height:1.5;
+  padding:20px;
+}
+
+.doulist-subject{
+  display: flex;
+  align-items: flex-start;
+}
+
+.doulist-subject .content {
+  flex: 1 1 auto;
+}
+
+.doulist-subject .post{
+  width: 120px;
+  margin-right:20px;
+  display: flex;
+  flex:0 0 auto;
+}
+.doulist-subject .title a{
+  text-decoration:none!important;
+}
+
+.doulist-subject .title {
+  margin-bottom: 4px;
+}
+
+.doulist-subject .rating{
+  margin:0 0 4px;
+  font-size:12px;
+  display: flex;
+  align-items: center;
+}
+.doulist-subject .abstract{
+  font-size:12px;
+}
+
+.album-photo {
+  display: flex;
+  justify-content: space-between;
+
+}
+.album-photo img {
+  max-width: 23.5%;
+  height: auto;
+}
+.doulist-subject img {
+  width: 120px;
+  height: auto;
+}
