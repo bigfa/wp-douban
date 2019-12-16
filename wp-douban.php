@@ -1,14 +1,14 @@
 <?php
 /*
 Plugin Name: WP-Douban
-Plugin URI: https://fatesinger.com/74915
+Plugin URI: https://fatesinger.com/project/wordpress-plugin.html
 Description: 豆瓣内容列表展示
-Version: 3.0.0
+Version: 3.0.1
 Author: Bigfa
 Author URI: https://fatesinger.com
 */
 
-define('WPD_VERSION', '3.0.0');
+define('WPD_VERSION', '3.0.1');
 define('WPD_URL', plugins_url('', __FILE__));
 define('WPD_PATH', dirname( __FILE__ ));
 define('WPD_ADMIN_URL', admin_url());

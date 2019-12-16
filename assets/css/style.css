@@ -82,8 +82,10 @@
 .album-photo img {
   max-width: 23.5%;
   height: auto;
+  flex:1 1 auto;
 }
 .doulist-subject img {
   width: 120px;
   height: auto;
+  flex:1 1 auto;
 }
