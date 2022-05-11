@@ -37,7 +37,7 @@
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
 .doulist-subject, .doulist-album{
-  line-height:1.5;
+  line-height:1.6;
   padding:20px;
 }
 
@@ -71,7 +71,7 @@
   align-items: center;
 }
 .doulist-subject .abstract{
-  font-size:12px;
+  font-size:14px;
 }
 
 .album-photo {
