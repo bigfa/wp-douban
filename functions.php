@@ -1,159 +1,112 @@
 <?php
 
+/***
+ * Core functions
+ */
 class WPD_Douban
 {
-    const VERSION = '4.0.0';
+    const VERSION = '4.0.1';
     private $base_url = 'https://fatesinger.com/dbapi/';
 
     public function __construct()
     {
-        add_shortcode('douban', [$this, 'movie_detail']);
-        add_filter('comment_text', [$this, 'do_shortcode']);
-        add_action('wp_enqueue_scripts', [$this, 'wpd_load_scripts']);
+        if (WPD_LOAD_SCRIPTS) add_action('wp_enqueue_scripts', [$this, 'wpd_load_scripts']);
         wp_embed_register_handler('doubanlist', '#https?:\/\/(\w+)\.douban\.com\/subject\/(\d+)#i', [$this, 'wp_embed_handler_doubanlist']);
+        //add_action('rest_api_init', [$this, 'wpd_register_rest_routes']);
     }
+
+    // public function wpd_register_rest_routes()
+    // {
+    //     register_rest_route('v1', '/movies', array(
+    //         'methods' => 'GET',
+    //         'callback' => [$this, 'get_subjects'],
+    //     ));
+
+    //     register_rest_route('v1', '/movie/genres', array(
+    //         'methods' => 'GET',
+    //         'callback' => [$this, 'get_genres'],
+    //     ));
+    // }
+
+    // public function get_genres($data)
+    // {
+    //     global $wpdb;
+    //     $goods = $wpdb->get_results('SELECT name FROM `wp_douban_genres` WHERE `type` = "movie" GROUP BY `name`');
+    //     $data = [];
+    //     foreach ($goods as $good) {
+    //         $data[] = $good;
+    //     }
+    //     return $data;
+    // }
+
+    // public function get_subjects($data)
+    // {
+    //     global $wpdb;
+    //     $offset = $data['paged'] ? ($data['paged'] - 1) * 70 : 0;
+    //     $type = $data['type'] ? $data['type'] : 'movie';
+    //     $genre = $data['genre'] ? $data['genre'] : '';
+    //     if ($genre) {
+    //         $goods = $wpdb->get_results('SELECT m.*, f.create_time FROM ( `wp_douban_movies` m LEFT JOIN `wp_douban_genres` g ON m.id = g.movie_id ) LEFT JOIN `wp_douban_faves` f ON m.id = f.subject_id WHERE f.type = "' . $type . '" AND f.status = "done" AND  g.name = "' . $genre . '" ORDER BY f.create_time DESC LIMIT 70 OFFSET ' . $offset);
+    //     } else {
+    //         $goods = $wpdb->get_results('SELECT m.*, f.create_time FROM `wp_douban_movies` m LEFT JOIN `wp_douban_faves` f ON m.id = f.subject_id WHERE f.type = "' . $type . '" AND f.status = "done" ORDER BY f.create_time DESC LIMIT 70 OFFSET ' . $offset);
+    //     }
+
+    //     $data = [];
+    //     foreach ($goods as $good) {
+    //         if (WPD_CACHE_IMAGE) $good->poster = $this->wpd_save_images($good->douban_id, $good->poster);
+    //         $good->create_time = date('Y-m-d', strtotime($good->create_time));
+    //         if ($good->type == 'movie') {
+    //             $re = $wpdb->get_results('SELECT * FROM `wp_douban_relation` WHERE `collection_id` = 1 AND  `movie_id` = ' . $good->id);
+    //             $good->is_top250 = !empty($re);
+    //         }
+    //         $data[] = $good;
+    //     }
+    //     return $data;
+    // }
 
     public function wp_embed_handler_doubanlist($matches, $attr, $url, $rawattr)
     {
         if (!is_singular()) return $url;
         $type = $matches[1];
+        if (!in_array($type, ['movie', 'book', 'music'])) return $url;
         $id = $matches[2];
-        if ($type == 'music') {
-            $html = $this->display_music_detail($id);
-        } elseif ($type == 'movie') {
-            $html = $this->display_movie_detail($id);
-        } elseif ($type == 'book') {
-            $html = $this->display_book_detail($id);
-        }
-
+        $html = $this->get_subject_detail($id, $type);
         return apply_filters('embed_forbes', $html, $matches, $attr, $url, $rawattr);
     }
 
-    public function movie_detail($atts, $content = null)
-    {
-        extract(shortcode_atts(array(
-            'id' => '',
-            'type' => ''
-        ), $atts));
-        $movieids =  explode(',', $id);
-        if ($type == 'music') {
-            foreach ($movieids as $movieid) {
-                $output .= $this->display_music_detail($movieid);
-            }
-        } elseif ($type == 'book') {
-
-            foreach ($movieids as $movieid) {
-                $output .= $this->display_book_detail($movieid);
-            }
-        } else {
-            foreach ($movieids as $movieid) {
-                $output .= $this->display_movie_detail($movieid);
-            }
-        }
-        return $output;
-    }
-
-
-    public function display_book_detail($id)
-    {
-        $data = $this->get_movie_detail($id, 'book');
-        $cover =  WPD_CACHE_IMAGE ? $this->wpd_save_images($id, $data['pic']['large']) : $data['pic']['large'];
-        $output = '<div class="doulist-item"><div class="doulist-subject"><div class="post"><img referrerpolicy="no-referrer" src="' .  $cover . '"></div>';
-        $output .= '<div class="content"><div class="title"><a href="' . $data["url"] . '" class="cute" target="_blank" rel="external nofollow">' . $data["title"] . '</a></div>';
-        $output .= '<div class="rating"><span class="allstardark"><span class="allstarlight" style="width:' . $data["rating"]["value"] * 10 . '%"></span></span><span class="rating_nums"> ' . $data["rating"]["value"] . ' </span><span>(' . $data["rating"]["count"] . '人评价)</span></div>';
-        $output .= '<div class="abstract">作者 : ';
-        $authors = $data["author"];
-        foreach ($authors as $key => $author) {
-            $output .= $author;
-            if ($key != count($authors) - 1) {
-                $output .= ' / ';
-            }
-        }
-        $output .= '<br>出版社 : ' . $data["press"][0] . '<br>出版年 : ';
-        $output .= $data["pubdate"][0];
-        $output .= '</div></div></div></div>';
-        return $output;
-    }
-
-    public function display_music_detail($id)
-    {
-        $data = $this->get_movie_detail($id, 'music');
-        $cover =  WPD_CACHE_IMAGE ? $this->wpd_save_images($id, $data['pic']['large']) : $data['pic']['large'];
-        $output = '<div class="doulist-item"><div class="doulist-subject"><div class="post"><img referrerpolicy="no-referrer" src="' . $cover . '"></div>';
-        $output .= '<div class="content"><div class="title"><a href="' . $data["url"] . '" class="cute" target="_blank" rel="external nofollow">' . $data["title"] . '</a></div>';
-        $output .= '<div class="rating"><span class="allstardark"><span class="allstarlight" style="width:' . $data["rating"]["value"] * 10 . '%"></span></span><span class="rating_nums"> ' . $data["rating"]["value"] . ' </span><span>(' . $data["rating"]["count"] . '人评价)</span></div>';
-        $output .= '<div class="abstract">表演者 : ';
-        $authors = $data["singer"];
-        foreach ($authors as $key => $author) {
-            $output .= $author['name'];
-            if ($key != count($authors) - 1) {
-                $output .= ' / ';
-            }
-        }
-        $output .= '<br>年份 : ' . $data["pubdate"][0] . '<br>风格 : ';
-        $tags = $data["genres"];
-        foreach ($tags as $key => $tag) {
-            $output .= $tag;
-            if ($key != count($tags) - 1) {
-                $output .= ' / ';
-            }
-        }
-        $output .= '</div></div></div></div>';
-        return $output;
-    }
-
-    public function display_movie_detail($id)
-    {
-        $data = $this->get_movie_detail($id, 'movie');
-        $cover =  WPD_CACHE_IMAGE ? $this->wpd_save_images($id, $data['pic']['large']) : $data['pic']['large'];
-
-        $output = '<div class="doulist-item"><div class="doulist-subject"><div class="post"><img referrerpolicy="no-referrer" src="' .  $cover . '"></div>';
-        $output .= '<div class="content"><div class="title"><a href="' . $data["url"] . '" class="cute" target="_blank" rel="external nofollow">' . $data["title"] . '</a></div>';
-        $output .= '<div class="rating"><span class="allstardark"><span class="allstarlight" style="width:' . $data["rating"]["value"] * 10 . '%"></span></span><span class="rating_nums"> ' . $data["rating"]["value"] . ' </span><span>(' . $data["rating"]["count"] . '人评价)</span></div>';
-        $output .= '<div class="abstract">导演 :';
-        $directors = $data["directors"];
-        foreach ($directors as $key => $director) {
-            $output .= $director["name"];
-            if ($key != count($directors) - 1) {
-                $output .= ' / ';
-            }
-        }
-        $output .= '<br >演员: ';
-        $casts = $data["actors"];
-        foreach ($casts as $key => $cast) {
-            $output .= $cast["name"];
-            if ($key != count($casts) - 1) {
-                $output .= ' / ';
-            }
-        }
-        $output .= '<br >';
-        $output .= '类型: ';
-        $genres = $data["genres"];
-        foreach ($genres as $key => $genre) {
-            $output .= $genre;
-            if ($key != count($genres) - 1) {
-                $output .= ' / ';
-            }
-        }
-        $output .= '<br >制片国家/地区: ';
-        $countries = $data["countries"];
-        foreach ($countries as $key => $country) {
-            $output .= $country;
-            if ($key != count($countries) - 1) {
-                $output .= ' / ';
-            }
-        }
-        $output .= '<br>年份: ' . $data["year"] . '</div></div></div></div>';
-        return $output;
-    }
-
-
-    public function get_movie_detail($id, $type)
+    public function get_subject_detail($id, $type)
     {
         $type = $type ? $type : 'movie';
-        $cache_key = WPD_CACHE_KEY . $type . '_' . $id;
-        $cache =  get_transient($cache_key);
-        if ($cache) return $cache;
+        $data = $this->fetch_subject($id, $type);
+        if (!$data) return;
+        $cover =  WPD_CACHE_IMAGE ? $this->wpd_save_images($id, $data->poster) : $data->poster;
+        $output = '<div class="doulist-item"><div class="doulist-subject"><div class="doulist-post"><img referrerpolicy="no-referrer" src="' .  $cover . '"></div>';
+        $output .= '<div class="doulist-content"><div class="doulist-title"><a href="' . $data->link . '" class="cute" target="_blank" rel="external nofollow">' . $data->name . '</a></div>';
+        $output .= '<div class="rating"><span class="allstardark"><span class="allstarlight" style="width:' . $data->douban_score * 10 . '%"></span></span><span class="rating_nums"> ' . $data->douban_score . ' </span></div>';
+        $output .= '<div class="abstract">';
+        $output .= $data->card_subtitle;
+        $output .= '</div></div></div></div>';
+        return $output;
+    }
+
+
+    public function fetch_subject($id, $type)
+    {
+        $type = $type ? $type : 'movie';
+        global $wpdb;
+        $movie = $wpdb->get_results("SELECT * FROM $wpdb->douban_movies WHERE `type` = '{$type}' AND douban_id = '{$id}'");
+        if (!empty($movie)) {
+            $movie = $movie[0];
+            $movie->genres = [];
+            $genres = $wpdb->get_results("SELECT * FROM $wpdb->douban_genres WHERE `type` = '{$type}' AND `movie_id` = {$movie->id}");
+            if (!empty($genres)) {
+                foreach ($genres as $genre) {
+                    $movie->genres[] = $genre->name;
+                }
+            }
+            return $movie;
+        }
+
         if ($type == 'movie') {
             $link = $this->base_url . "movie/" . $id . "?ck=xgtY&for_mobile=1";
         } elseif ($type == 'book') {
@@ -161,18 +114,53 @@ class WPD_Douban
         } else {
             $link = $this->base_url . "music/" . $id . "?ck=xgtY&for_mobile=1";
         }
-        delete_transient($cache_key);
-        $response = wp_remote_get($link);
+        $response = wp_remote_get($link, ['sslverify' => false]);
         if (is_wp_error($response)) {
             return false;
         }
         $data = json_decode(wp_remote_retrieve_body($response), true);
         if ($data) {
-            set_transient($cache_key, $data, WPD_CACHE_TIME);
+            $wpdb->insert($wpdb->douban_movies, [
+                'name' => $data['title'],
+                'poster' => $data['pic']['large'],
+                'douban_id' => $data['id'],
+                'douban_score' => $data['rating']['value'],
+                'link' => $data['url'],
+                'year' => '',
+                'type' => $type,
+                'pubdate' => $data['pubdate'] ? $data['pubdate'][0] : '',
+                'card_subtitle' => $data['card_subtitle']
+            ]);
+            $movie_id = '';
+            if ($wpdb->insert_id) {
+                $movie_id = $wpdb->insert_id;
+                if ($data['genres']) foreach ($data['genres'] as $genre) {
+                    $wpdb->insert(
+                        $wpdb->douban_genres,
+                        [
+                            'movie_id' => $movie_id,
+                            'name' => $genre,
+                            'type' => $type,
+                        ]
+                    );
+                }
+            }
+            return (object) [
+                'id' => $movie_id,
+                'name' => $data['title'],
+                'poster' => $data['pic']['large'],
+                'douban_id' => $data['id'],
+                'douban_score' => $data['rating']['value'],
+                'link' => $data['url'],
+                'year' => '',
+                'type' => $type,
+                'pubdate' => $data['pubdate'] ? $data['pubdate'][0] : '',
+                'card_subtitle' => $data['card_subtitle'],
+                'genres' => $data['genres']
+            ];
         } else {
             return false;
         }
-        return $data;
     }
 
     private function wpd_save_images($id, $url)
@@ -186,5 +174,52 @@ class WPD_Douban
     public function wpd_load_scripts()
     {
         wp_enqueue_style('wpd-css', WPD_URL . "/assets/css/style.css", array(), WPD_VERSION, 'screen');
+        // wp_enqueue_script('wpdjs', WPD_URL . "/assets/js/db.js", array(), WPD_VERSION, true);
+        // wp_localize_script('wpdjs', 'wpd_base', array(
+        //     'api' => get_rest_url(),
+        // ));
     }
+
+    // public function get_collections($name = 'movie_top250')
+    // {
+    //     $url = "{$this->base_url}subject_collection/{$name}/items?start=0&count=250&items_only=1&ck=xgtY&for_mobile=1";
+    //     $response = wp_remote_get($url);
+    //     $data = json_decode(wp_remote_retrieve_body($response), true);
+    //     $interests = $data['subject_collection_items'];
+    //     global $wpdb;
+    //     $coll = $wpdb->get_results("SELECT * FROM `wp_douban_collection` WHERE `douban_id` = '{$name}'");
+    //     $collection = $coll[0];
+    //     foreach ($interests as $interest) {
+    //         $movie = $wpdb->get_results("SELECT * FROM wp_douban_movies WHERE `type` = 'movie' AND douban_id = '{$interest['id']}'");
+    //         $movie_id = '';
+    //         if (empty($movie)) {
+    //             $wpdb->insert(
+    //                 'wp_douban_movies',
+    //                 array(
+    //                     'name' => $interest['title'],
+    //                     'poster' => $interest['pic']['large'],
+    //                     'douban_id' => $interest['id'],
+    //                     'douban_score' => $interest['rating']['value'],
+    //                     'link' => $interest['url'],
+    //                     'year' => '',
+    //                     'type' => 'movie',
+    //                     'pubdate' => '',
+    //                     'card_subtitle' => $interest['card_subtitle'],
+    //                 )
+    //             );
+    //             $movie_id = $wpdb->insert_id;
+    //         } else {
+    //             $movie_id = $movie[0]->id;
+    //         }
+
+    //         $relation = $wpdb->get_results("SELECT * FROM `wp_douban_relation` WHERE `movie_id` = '{$movie_id}' AND `collection_id` = {$collection->id})");
+
+    //         if (empty($relation)) {
+    //             $wpdb->insert('wp_douban_relation', [
+    //                 'movie_id' => $movie_id,
+    //                 'collection_id' => $collection->id
+    //             ]);
+    //         }
+    //     }
+    // }
 }
