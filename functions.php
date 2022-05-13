@@ -12,6 +12,9 @@ class WPD_Douban
     {
         if (WPD_LOAD_SCRIPTS) add_action('wp_enqueue_scripts', [$this, 'wpd_load_scripts']);
         wp_embed_register_handler('doubanlist', '#https?:\/\/(\w+)\.douban\.com\/subject\/(\d+)#i', [$this, 'wp_embed_handler_doubanlist']);
+        wp_embed_register_handler('doubanalbum', '#https?:\/\/www\.douban\.com\/(\w+)\/(\d+)#i', [$this, 'wp_embed_handler_doubanablum']);
+        wp_embed_register_handler('doubandrama', '#https?:\/\/www\.douban\.com\/location\/(\w+)\/(\d+)#i', [$this, 'wp_embed_handler_doubandrama']);
+
         //add_action('rest_api_init', [$this, 'wpd_register_rest_routes']);
     }
 
@@ -64,6 +67,26 @@ class WPD_Douban
     //     return $data;
     // }
 
+    function wp_embed_handler_doubandrama($matches, $attr, $url, $rawattr)
+    {
+        if (!is_singular()) return $url;
+        $type = $matches[1];
+        $id = $matches[2];
+        if (!in_array($type, ['drama'])) return $url;
+        $html = $this->get_subject_detail($id, $type);
+        return apply_filters('embed_forbes', $html, $matches, $attr, $url, $rawattr);
+    }
+
+    function wp_embed_handler_doubanablum($matches, $attr, $url, $rawattr)
+    {
+        if (!is_singular()) return $url;
+        $type = $matches[1];
+        $id = $matches[2];
+        if (!in_array($type, ['game'])) return $url;
+        $html = $this->get_subject_detail($id, $type);
+        return apply_filters('embed_forbes', $html, $matches, $attr, $url, $rawattr);
+    }
+
     public function wp_embed_handler_doubanlist($matches, $attr, $url, $rawattr)
     {
         if (!is_singular()) return $url;
@@ -111,6 +134,10 @@ class WPD_Douban
             $link = $this->base_url . "movie/" . $id . "?ck=xgtY&for_mobile=1";
         } elseif ($type == 'book') {
             $link = $this->base_url . "book/" . $id . "?ck=xgtY&for_mobile=1";
+        } elseif ($type == 'game') {
+            $link = $this->base_url . "game/" . $id . "?ck=xgtY&for_mobile=1";
+        } elseif ($type == 'drama') {
+            $link = $this->base_url . "drama/" . $id . "?ck=xgtY&for_mobile=1";
         } else {
             $link = $this->base_url . "music/" . $id . "?ck=xgtY&for_mobile=1";
         }
@@ -174,10 +201,10 @@ class WPD_Douban
     public function wpd_load_scripts()
     {
         wp_enqueue_style('wpd-css', WPD_URL . "/assets/css/style.css", array(), WPD_VERSION, 'screen');
-        // wp_enqueue_script('wpdjs', WPD_URL . "/assets/js/db.js", array(), WPD_VERSION, true);
-        // wp_localize_script('wpdjs', 'wpd_base', array(
-        //     'api' => get_rest_url(),
-        // ));
+        wp_enqueue_script('wpdjs', WPD_URL . "/assets/js/db.js", array(), WPD_VERSION, true);
+        wp_localize_script('wpdjs', 'wpd_base', array(
+            'api' => get_rest_url(),
+        ));
     }
 
     // public function get_collections($name = 'movie_top250')

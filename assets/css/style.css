@@ -78,3 +78,20 @@
   border-radius: 4px;
   object-fit: cover;
 }
+
+.db--list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.db--item {
+  width: 150px;
+  margin-right: 20px;
+}
+
+.db--item__music img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+}

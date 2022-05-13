@@ -1,3 +1,5 @@
 .DS_store
 db.php
 assets/js
+tpl-setting.php
+setup.php

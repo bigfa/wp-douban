@@ -3,18 +3,19 @@
 Plugin Name: WP-Douban
 Plugin URI: https://fatesinger.com/101005
 Description: 豆瓣内容列表展示
-Version: 4.0.1
+Version: 4.0.2
 Author: Bigfa
 Author URI: https://fatesinger.com
 */
 
-define('WPD_VERSION', '4.0.1');
+define('WPD_VERSION', '4.0.2');
 define('WPD_URL', plugins_url('', __FILE__));
 define('WPD_PATH', dirname(__FILE__));
 define('WPD_ADMIN_URL', admin_url());
 define('WPD_CACHE_IMAGE', false);
 define('WPD_LOAD_SCRIPTS', true);
 define('WPD_UID', 54529369);
+
 
 ### DB Table Name
 global $wpdb;
