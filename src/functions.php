@@ -1,7 +1,7 @@
 <?php
 
 /***
- * Core functions
+ * Core Class
  */
 class WPD_Douban
 {
@@ -12,7 +12,7 @@ class WPD_Douban
     {
         $plugin_file = plugin_basename(WPD_PATH . '/wp-douban.php');
 
-        if (db_get_setting('load_scripts')) add_action('wp_enqueue_scripts', [$this, 'wpd_load_scripts']);
+        if (db_get_setting('disable_scripts')) add_action('wp_enqueue_scripts', [$this, 'wpd_load_scripts']);
         wp_embed_register_handler('doubanlist', '#https?:\/\/(\w+)\.douban\.com\/subject\/(\d+)#i', [$this, 'wp_embed_handler_doubanlist']);
         wp_embed_register_handler('doubanalbum', '#https?:\/\/www\.douban\.com\/(\w+)\/(\d+)#i', [$this, 'wp_embed_handler_doubanablum']);
         wp_embed_register_handler('doubandrama', '#https?:\/\/www\.douban\.com\/location\/(\w+)\/(\d+)#i', [$this, 'wp_embed_handler_doubandrama']);

@@ -62,8 +62,9 @@ class Subject_List_Table extends \WP_List_Table
 
         $offset = ($currentPage - 1) * 50;
 
-        $filter = !empty($_GET['subject_type']) && $_GET['subject_type'] != 'all' ? " AND `type` = '{$_GET['subject_type']}'" : '';
-        $schedules = $wpdb->get_results("SELECT * FROM $wpdb->douban_movies WHERE 1=1{$filter} ORDER BY id DESC LIMIT 50 OFFSET {$offset}");
+        $filter = !empty($_GET['subject_type']) && $_GET['subject_type'] != 'all' ? " AND f.type = '{$_GET['subject_type']}'" : '';
+
+        $schedules = $wpdb->get_results("SELECT m.*, f.create_time, f.remark, f.score FROM $wpdb->douban_movies m LEFT JOIN $wpdb->douban_faves f ON m.id = f.subject_id WHERE f.status = 'done'{$filter} ORDER BY f.create_time DESC LIMIT 40 OFFSET {$offset}");
         // $count     = count($schedules);
 
         // self::$core_schedules = get_core_schedules();
@@ -73,7 +74,7 @@ class Subject_List_Table extends \WP_List_Table
 
         $this->set_pagination_args(array(
             'total_items' => $this->get_subject_count($_GET['subject_type']),
-            'per_page'    => 50,
+            'per_page'    => 40,
             //'total_pages' => 1,
         ));
     }
@@ -132,8 +133,8 @@ class Subject_List_Table extends \WP_List_Table
     protected function get_subject_count($type)
     {
         global $wpdb;
-        $filter = (!$type || $type == 'all') ? '' : ' AND `type` = "' . $type . '"';
-        $schedules = $wpdb->get_results("SELECT id FROM $wpdb->douban_movies WHERE 1=1{$filter}");
+        $filter = $type && $type != 'all' ? " AND f.type = '{$type}'" : '';
+        $schedules = $wpdb->get_results("SELECT m.id FROM $wpdb->douban_movies m LEFT JOIN $wpdb->douban_faves f ON m.id = f.subject_id WHERE f.status = 'done'{$filter}");
         return count($schedules);
     }
 
@@ -165,6 +166,9 @@ class Subject_List_Table extends \WP_List_Table
             case 'name':
             case 'douban_score':
             case 'card_subtitle':
+            case 'remark':
+            case 'create_time':
+            case 'score':
                 return $item->$column_name;
 
             case 'poster':
@@ -223,8 +227,11 @@ class Subject_List_Table extends \WP_List_Table
         return array(
             'name'     => '标题',
             'poster' => '封面',
-            'douban_score' => '评分',
-            'card_subtitle' => '描述'
+            'douban_score' => '豆瓣评分',
+            'card_subtitle' => '描述',
+            'create_time' => '时间',
+            'remark' => '我的短评',
+            'score' => '我的评分'
         );
     }
 

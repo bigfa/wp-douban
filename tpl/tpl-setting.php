@@ -59,12 +59,12 @@
                     </td>
                 </tr>
                 <tr valign="top">
-                    <th scope="row"><label for="<?php echo db_setting_key('download_image'); ?>">静态文件</label></th>
+                    <th scope="row"><label for="<?php echo db_setting_key('disable_scripts'); ?>">静态文件</label></th>
                     <td>
-                        <label for="<?php echo db_setting_key('load_scripts'); ?>">
-                            <input type="checkbox" name="<?php echo db_setting_key('load_scripts'); ?>" id="download_image" value="1" <?php if (db_get_setting("load_scripts")) echo 'checked="checked"'; ?>>
+                        <label for="<?php echo db_setting_key('disbale_scripts'); ?>">
+                            <input type="checkbox" name="<?php echo db_setting_key('disbale_scripts'); ?>" id="download_image" value="1" <?php if (db_get_setting("disbale_scripts")) echo 'checked="checked"'; ?>>
                         </label>
-                        <p class="description">开启后将封面图片下载到本地。</p>
+                        <p class="description">开启不加载插件静态文件。</p>
                     </td>
                 </tr>
             </tbody>
