@@ -1,97 +1,249 @@
-.allstardark{
+:root {
+  --main-bg-color: rgba(0, 87, 217);
+  --main-hover-color: rgba(104, 156, 233, 1);
+  --text-main-color: rgba(0, 0, 0, 0.8);
+  --text-gray-medium: rgba(0, 0, 0, 0.7);
+  --text-gray-lightest: rgba(0, 0, 0, 0.55);
+  --text-gray-light: rgba(0, 0, 0, 0.6);
+  --background-gray-lightest: #fafafa;
+}
+.db--nav {
+  padding: 30px 0 20px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.db--navItem {
+  font-size: 20px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(0, 0, 0, 0);
+  transition: 0.5s border-color;
+  display: flex;
+  align-items: center;
+  text-transform: capitalize;
+  margin-right: 20px;
+}
+.db--navItem.current, .db--navItem:hover {
+  border-color: inherit;
+}
+.db--score svg {
+  fill: #f5c518;
+  margin-right: 5px;
+}
+.db--list {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.db--image {
+  width: 150px;
+  height: 215px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.db--image:hover {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.db--title {
+  margin-top: 2px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.db--title a:hover {
+  color: var(--main-hover-color);
+  text-decoration: underline;
+}
+.db--genreItem {
+  background: #f2f4f6;
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: 4px;
+  margin-right: 6px;
+  margin-bottom: 10px;
+  line-height: 1.4;
+  cursor: pointer;
+}
+.db--genreItem.is-active {
+  background-color: var(--main-bg-color);
+  color: #fff;
+}
+.db--genreItem:hover {
+  background-color: var(--main-hover-color);
+  color: #fff;
+}
+.db--genres {
+  padding-bottom: 15px;
+  display: flex;
+  flex-wrap: wrap;
+}
+.db--genres.u-hide + .db--list {
+  padding-top: 10px;
+}
+.db--score {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: var(--text-gray-lightest);
+}
+.db--item {
+  width: 150px;
+  margin-right: 20px;
+  margin-bottom: 20px;
+  position: relative;
+}
+.db--item__music img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+}
+.db--item .top250 {
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: #f5c518;
+  color: #000000;
+  border-radius: 4px 4px 4px 0;
+  line-height: 1;
+  padding: 3px 10px 3px 5px;
+  font-size: 12px;
+  display: flex;
+  margin-bottom: 2px;
+  font-weight: 900;
+}
+.db--item .top250:after {
+  content: '';
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  right: 0;
+  top: 0;
+  margin-right: -0.2rem;
+  border-radius: 0 0 4px 4px;
+  background: inherit;
+  height: 100%;
+  position: absolute;
+  width: 0.75rem;
+  transform: skewX(-20deg);
+}
+.ipc-signpost {
+  position: relative;
+  background: #f5c518;
+  color: #000000;
+  border-radius: 4px;
+  line-height: 1;
+  padding: 3px 5px;
+  font-size: 12px;
+  display: flex;
+  width: 58%;
+  margin-bottom: 2px;
+  font-weight: 900;
+}
+.ipc-signpost:after {
+  content: '';
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  right: 0;
+  top: 0;
+  margin-right: -0.2rem;
+  border-radius: 4px;
+  background: inherit;
+  height: 100%;
+  position: absolute;
+  width: 0.75rem;
+  transform: skewX(-20deg);
+}
+.doulist-item {
+  margin: 30px 0;
+  color: #666;
+  border: 1px solid #eee;
+  border-radius: 4px;
+}
+.doulist-item:hover {
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+}
+.doulist-item .doulist-subject {
+  display: flex;
+  align-items: flex-start;
+  line-height: 1.6;
+  padding: 12px;
+  position: relative;
+}
+.doulist-item .doulist-subject .db--viewTime {
+  position: absolute;
+  right: 0;
+  top: 0;
+  background: #f5c518;
+  color: #000000;
+  border-radius: 4px 4px 0px 4px;
+  line-height: 1;
+  padding: 3px 5px 3px 10px;
+  font-size: 12px;
+  display: flex;
+  margin-bottom: 2px;
+  font-weight: 900;
+}
+.doulist-item .doulist-subject .db--viewTime:after {
+  content: '';
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  left: 0;
+  top: 0;
+  margin-left: -0.2rem;
+  border-radius: 0px 4px 4px 4px;
+  background: inherit;
+  height: 100%;
+  position: absolute;
+  width: 0.75rem;
+  transform: skewX(20deg);
+}
+.doulist-item .doulist-subject .doulist-content {
+  flex: 1 1 auto;
+}
+.doulist-item .doulist-subject .doulist-post {
+  width: 96px;
+  margin-right: 15px;
+  display: flex;
+  flex: 0 0 auto;
+}
+.doulist-item .doulist-subject .doulist-title {
+  margin-bottom: 5px;
+  font-size: 18px;
+}
+.doulist-item .doulist-subject .doulist-title a {
+  text-decoration: none !important;
+}
+.doulist-item .doulist-subject .rating {
+  margin: 0 0 5px;
+  font-size: 14px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+}
+.doulist-item .doulist-subject .rating .allstardark {
   position: relative;
   color: #f99b01;
   height: 16px;
   width: 80px;
-  background-repeat:repeat;
-  background-image: url('star.svg');
+  background-repeat: repeat;
+  background-image: url('../img/star.svg');
   background-size: auto 100%;
   margin-right: 5px;
 }
-
-.allstarlight {
+.doulist-item .doulist-subject .rating .allstarlight {
   position: absolute;
   left: 0;
   color: #f99b01;
   height: 16px;
   overflow: hidden;
-  background-repeat:repeat;
-  background-image: url('star-fill.svg');
+  background-repeat: repeat;
+  background-image: url('../img/star-fill.svg');
   background-size: auto 100%;
 }
-
-.doulist-title {
-  font-size: 18px;
+.doulist-item .doulist-subject .abstract {
+  font-size: 14px;
 }
-
-.doulist-item{
-  margin:30px 0;
-  color: #666;
-  border: 1px solid #eee;
+.doulist-item .doulist-subject img {
+  width: 96px !important;
+  height: 96px !important;
   border-radius: 4px;
-}
-
-.doulist-item:hover {
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
-}
-
-
-.doulist-subject{
-  display: flex;
-  align-items: flex-start;
-  line-height:1.6;
-  padding:12px;
-}
-
-.doulist-subject .doulist-content {
-  flex: 1 1 auto;
-}
-
-.doulist-subject .doulist-post{
-  width: 96px;
-  margin-right:15px;
-  display: flex;
-  flex:0 0 auto;
-}
-.doulist-subject .doulist-title a{
-  text-decoration:none!important;
-}
-
-.doulist-subject .doulist-title {
-  margin-bottom: 5px;
-}
-
-.doulist-subject .rating{
-  margin:0 0 5px;
-  font-size:14px;
-  line-height: 1;
-  display: flex;
-  align-items: center;
-}
-.doulist-subject .abstract{
-  font-size:14px;
-}
-
-.doulist-subject img {
-  width: 96px!important;
-  height: 96px!important;
-  border-radius: 4px;
-  object-fit: cover;
-}
-
-.db--list {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-}
-
-.db--item {
-  width: 150px;
-  margin-right: 20px;
-}
-
-.db--item__music img {
-  width: 150px;
-  height: 150px;
   object-fit: cover;
 }

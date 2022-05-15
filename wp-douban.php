@@ -2,20 +2,16 @@
 /*
 Plugin Name: WP-Douban
 Plugin URI: https://fatesinger.com/101005
-Description: 豆瓣内容列表展示
-Version: 4.0.2
+Description: 🎬 📖 🎵 🎮 manage your movie / book / music / game records
+Version: 4.0.3
 Author: Bigfa
 Author URI: https://fatesinger.com
 */
 
-define('WPD_VERSION', '4.0.2');
+define('WPD_VERSION', '4.0.3');
 define('WPD_URL', plugins_url('', __FILE__));
 define('WPD_PATH', dirname(__FILE__));
 define('WPD_ADMIN_URL', admin_url());
-define('WPD_CACHE_IMAGE', false);
-define('WPD_LOAD_SCRIPTS', true);
-define('WPD_UID', 54529369);
-
 
 ### DB Table Name
 global $wpdb;
@@ -24,7 +20,33 @@ $wpdb->douban_faves   = $wpdb->prefix . 'douban_faves';
 $wpdb->douban_genres  = $wpdb->prefix . 'douban_genres';
 $wpdb->douban_movies  = $wpdb->prefix . 'douban_movies';
 $wpdb->douban_relation  = $wpdb->prefix . 'douban_relation';
+$wpdb->douban_log  = $wpdb->prefix . 'douban_log';
 
+/**
+ * Remove schedule job
+ */
+register_deactivation_hook(__FILE__, 'db_deactivation');
+function db_deactivation()
+{
+    wp_clear_scheduled_hook('db_sync');
+}
+
+/**
+ * Remove schedule job
+ * Drop database table
+ */
+register_uninstall_hook(__FILE__, 'db_uninstall');
+function db_uninstall()
+{
+    wp_clear_scheduled_hook('db_sync');
+    global $wpdb;
+    $wpdb->query("DROP TABLE IF EXISTS {$wpdb->douban_collection}");
+    $wpdb->query("DROP TABLE IF EXISTS {$wpdb->douban_faves}");
+    $wpdb->query("DROP TABLE IF EXISTS {$wpdb->douban_genres}");
+    $wpdb->query("DROP TABLE IF EXISTS {$wpdb->douban_movies}");
+    $wpdb->query("DROP TABLE IF EXISTS {$wpdb->douban_relation}");
+    $wpdb->query("DROP TABLE IF EXISTS {$wpdb->douban_log}");
+}
 
 /**
  * Create Database on install
@@ -35,7 +57,8 @@ $wpdb->douban_relation  = $wpdb->prefix . 'douban_relation';
 register_activation_hook(__FILE__, 'wpd_install');
 function wpd_install()
 {
-    //wp_schedule_event(time(), 'hourly', 'db_sync');
+    // Create sechedule sync job
+    wp_schedule_event(time(), 'hourly', 'db_sync');
     $thumb_path = ABSPATH . "douban_cache/";
     if (file_exists($thumb_path)) {
         if (!is_writeable($thumb_path)) {
@@ -44,7 +67,6 @@ function wpd_install()
     } else {
         @mkdir($thumb_path, '511', true);
     }
-
 
     // Create DB Tables (5 Tables)
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -101,16 +123,30 @@ function wpd_install()
         "PRIMARY KEY  (id)" .
         ") $charset_collate;";
 
-    dbDelta($create_table['douban_collection']);
-    dbDelta($create_table['douban_faves']);
-    dbDelta($create_table['douban_genres']);
-    dbDelta($create_table['douban_movies']);
-    dbDelta($create_table['douban_relation']);
+    $create_table['douban_log'] = "CREATE TABLE $wpdb->douban_log (" .
+        "id int(10) NOT NULL auto_increment," .
+        "type varchar(16)," .
+        "action varchar(16)," .
+        "create_time datetime," .
+        "status varchar(16)," .
+        "message varchar(256)," .
+        "account_id varchar(16)," .
+        "PRIMARY KEY (id)" .
+        ") $charset_collate;";
+
+    if ($wpdb->get_var("SHOW TABLES LIKE $wpdb->douban_collection") != $wpdb->douban_collection) dbDelta($create_table['douban_collection']);
+
+    if ($wpdb->get_var("SHOW TABLES LIKE $wpdb->douban_collection") != $wpdb->douban_collection) dbDelta($create_table['douban_faves']);
+    if ($wpdb->get_var("SHOW TABLES LIKE $wpdb->douban_genres") != $wpdb->douban_genres) dbDelta($create_table['douban_genres']);
+    if ($wpdb->get_var("SHOW TABLES LIKE $wpdb->douban_movies") != $wpdb->douban_movies) dbDelta($create_table['douban_movies']);
+    if ($wpdb->get_var("SHOW TABLES LIKE $wpdb->douban_relation") != $wpdb->douban_relation) dbDelta($create_table['douban_relation']);
+    if ($wpdb->get_var("SHOW TABLES LIKE $wpdb->douban_log") != $wpdb->douban_log) dbDelta($create_table['douban_log']);
 }
 
 /**
  * Load classes
  */
-require WPD_PATH . '/functions.php';
-//require WPD_PATH . '/db.php';
+require WPD_PATH . '/src/functions.php';
+require WPD_PATH . '/src/setup.php';
+require WPD_PATH . '/src/db.php';
 new WPD_Douban();
