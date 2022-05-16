@@ -5,7 +5,7 @@
  */
 class WPD_Douban
 {
-    const VERSION = '4.0.4';
+    const VERSION = '4.0.5';
     private $base_url = 'https://fatesinger.com/dbapi/';
 
     public function __construct()
@@ -63,11 +63,12 @@ class WPD_Douban
             array(
                 'type' => '',
                 'start' => '',
-                'end' => ''
+                'end' => '',
+                'style' => ''
             ),
             $atts
         ));
-        return $this->render_collection($type, $start, $end);
+        return $this->render_collection($type, $start, $end, $style);
     }
 
     function plugin_action_links($actions, $plugin_file, $plugin_data, $context)
@@ -103,9 +104,9 @@ class WPD_Douban
         }
     }
 
-    public function render_collection($type, $start, $end)
+    public function render_collection($type, $start, $end, $style)
     {
-        return '<div class="db--collection" data-type="' . $type . '" data-start="' . $start . '" data-end="' . $end . '"></div>
+        return '<div class="db--collection" data-type="' . $type . '" data-start="' . $start . '" data-end="' . $end . '" ' . ($style ? 'data-style="' . $style . '"' : '') . '></div>
         ';
     }
 

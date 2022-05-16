@@ -61,8 +61,8 @@
                 <tr valign="top">
                     <th scope="row"><label for="<?php echo db_setting_key('disable_scripts'); ?>">静态文件</label></th>
                     <td>
-                        <label for="<?php echo db_setting_key('disbale_scripts'); ?>">
-                            <input type="checkbox" name="<?php echo db_setting_key('disbale_scripts'); ?>" id="disable_scripts" value="1" <?php if (db_get_setting("disbale_scripts")) echo 'checked="checked"'; ?>>
+                        <label for="<?php echo db_setting_key('disable_scripts'); ?>">
+                            <input type="checkbox" name="<?php echo db_setting_key('disable_scripts'); ?>" id="disable_scripts" value="1" <?php if (db_get_setting("disable_scripts")) echo 'checked="checked"'; ?>>
                         </label>
                         <p class="description">开启不加载插件静态文件。</p>
                     </td>
@@ -70,7 +70,7 @@
                 <tr valign="top">
                     <th scope="row"><label for="<?php echo db_setting_key('top250'); ?>">豆瓣Top250</label></th>
                     <td>
-                        <label for="<?php echo db_setting_key('disbale_scripts'); ?>">
+                        <label for="<?php echo db_setting_key('top250'); ?>">
                             <input type="checkbox" name="<?php echo db_setting_key('top250'); ?>" id="top250" value="1" <?php if (db_get_setting("top250")) echo 'checked="checked"'; ?>>
                         </label>
                         <p class="description">开启该选项则会定期同步豆瓣top250 清单，当条目在清单中时展示top250 标识。</p>

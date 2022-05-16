@@ -175,6 +175,7 @@ class WP_DOUBAN {
     }
 
     _fetchCollection(item) {
+        const type = item.dataset.style ? item.dataset.style : "card";
         fetch(
             wpd_base.api +
                 "v1/movies?type=" +
@@ -188,9 +189,10 @@ class WP_DOUBAN {
             .then((t) => {
                 // @ts-ignore
                 if (t.length) {
-                    item.innerHTML += t
-                        .map((movie) => {
-                            return `<div class="doulist-item">
+                    if (type == "card") {
+                        item.innerHTML += t
+                            .map((movie) => {
+                                return `<div class="doulist-item">
                             <div class="doulist-subject">
                             <div class="db--viewTime JiEun">Marked ${
                                 movie.create_time
@@ -198,16 +200,57 @@ class WP_DOUBAN {
                             <div class="doulist-post"><img referrerpolicy="no-referrer" src="${
                                 movie.poster
                             }"></div><div class="doulist-content"><div class="doulist-title"><a href="${
-                                movie.link
-                            }" class="cute" target="_blank" rel="external nofollow">${
-                                movie.name
-                            }</a></div><div class="rating"><span class="allstardark"><span class="allstarlight" style="width:75%"></span></span><span class="rating_nums">${
-                                movie.douban_score
-                            }</span></div><div class="abstract">${
-                                movie.remark || movie.card_subtitle
-                            }</div></div></div></div>`;
-                        })
-                        .join("");
+                                    movie.link
+                                }" class="cute" target="_blank" rel="external nofollow">${
+                                    movie.name
+                                }</a></div><div class="rating"><span class="allstardark"><span class="allstarlight" style="width:75%"></span></span><span class="rating_nums">${
+                                    movie.douban_score
+                                }</span></div><div class="abstract">${
+                                    movie.remark || movie.card_subtitle
+                                }</div></div></div></div>`;
+                            })
+                            .join("");
+                    } else {
+                        const result = t.reduce((result, item) => {
+                            if (
+                                Object.prototype.hasOwnProperty.call(
+                                    result,
+                                    item.create_time
+                                )
+                            ) {
+                                result[item.create_time].push(item);
+                            } else {
+                                result[item.create_time] = [item];
+                            }
+                            return result;
+                        }, {});
+                        let html = ``;
+                        for (let key in result) {
+                            html += `<div class="db--date">${key}</div><div class="db--dateList">`;
+                            html += result[key]
+                                .map((movie) => {
+                                    return `<div class="db--card__list"">
+                                    <img referrerpolicy="no-referrer" src="${
+                                        movie.poster
+                                    }">
+                                    <div>
+                                    <div class="title"><a href="${
+                                        movie.link
+                                    }" class="cute" target="_blank" rel="external nofollow">${
+                                        movie.name
+                                    }</a></div>
+                                    <div class="rating"><span class="allstardark"><span class="allstarlight" style="width:75%"></span></span><span class="rating_nums">${
+                                        movie.douban_score
+                                    }</span></div>
+                                    ${movie.remark || movie.card_subtitle}
+                                    </div>
+                                    </div>`;
+                                })
+                                .join("");
+                            html += `</div>`;
+                        }
+                        item.innerHTML = html;
+                    }
                 }
             });
     }
