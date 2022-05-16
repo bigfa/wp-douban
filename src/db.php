@@ -7,7 +7,7 @@ class db_sync extends WPD_Douban
 
     public function __construct()
     {
-        $this->uid = db_get_setting('id');
+        $this->uid = $this->db_get_setting('id');
         add_action('db_sync', [$this, 'db_sync_data']);
     }
 
@@ -23,9 +23,7 @@ class db_sync extends WPD_Douban
 
     public function db_sync_data()
     {
-        if (!$this->uid) {
-            return;
-        }
+
         $sync_types = [
             'movie',
             'music',
@@ -36,6 +34,9 @@ class db_sync extends WPD_Douban
         global $wpdb;
 
         if ($this->db_get_setting('top250')) $this->get_collections('movie_top250');
+        if (!$this->uid) {
+            return false;
+        }
         foreach ($sync_types as $type) {
             $confition = true;
             $i = 0;

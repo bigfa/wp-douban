@@ -39,6 +39,9 @@ register_uninstall_hook(__FILE__, 'db_uninstall');
 function db_uninstall()
 {
     wp_clear_scheduled_hook('db_sync');
+    // Delete setting
+    delete_option('db_setting');
+    // Drop database table
     global $wpdb;
     $wpdb->query("DROP TABLE IF EXISTS {$wpdb->douban_collection}");
     $wpdb->query("DROP TABLE IF EXISTS {$wpdb->douban_faves}");
