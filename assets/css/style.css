@@ -1,11 +1,6 @@
 :root {
-  --main-bg-color: rgba(0, 87, 217);
-  --main-hover-color: rgba(104, 156, 233, 1);
-  --text-main-color: rgba(0, 0, 0, 0.8);
-  --text-gray-medium: rgba(0, 0, 0, 0.7);
-  --text-gray-lightest: rgba(0, 0, 0, 0.55);
-  --text-gray-light: rgba(0, 0, 0, 0.6);
-  --background-gray-lightest: #fafafa;
+  --db-main-color: rgba(0, 87, 217);
+  --db-hover-color: rgba(104, 156, 233, 1);
 }
 .db--nav {
   padding: 30px 0 20px;
@@ -50,7 +45,7 @@
   line-height: 1.4;
 }
 .db--title a:hover {
-  color: var(--main-hover-color);
+  color: var(--db-hover-color);
   text-decoration: underline;
 }
 .db--genreItem {
@@ -64,11 +59,11 @@
   cursor: pointer;
 }
 .db--genreItem.is-active {
-  background-color: var(--main-bg-color);
+  background-color: var(--db-main-color);
   color: #fff;
 }
 .db--genreItem:hover {
-  background-color: var(--main-hover-color);
+  background-color: var(--db-hover-color);
   color: #fff;
 }
 .db--genres {
@@ -83,7 +78,7 @@
   display: flex;
   align-items: center;
   font-size: 14px;
-  color: var(--text-gray-lightest);
+  color: rgba(0, 0, 0, 0.55);
 }
 .db--item {
   width: 150px;

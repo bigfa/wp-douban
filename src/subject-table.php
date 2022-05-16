@@ -32,10 +32,10 @@ class Subject_List_Table extends \WP_List_Table
     public function __construct()
     {
         parent::__construct(array(
-            'singular' => 'crontrol-schedule',
-            'plural'   => 'crontrol-schedules',
+            'singular' => 'wp-douban',
+            'plural'   => 'wp-doubans',
             'ajax'     => false,
-            'screen'   => 'crontrol-schedules',
+            'screen'   => 'wp-douban',
         ));
     }
 
@@ -64,24 +64,18 @@ class Subject_List_Table extends \WP_List_Table
 
         $filter = !empty($_GET['subject_type']) && $_GET['subject_type'] != 'all' ? " AND f.type = '{$_GET['subject_type']}'" : '';
 
-        $schedules = $wpdb->get_results("SELECT m.*, f.create_time, f.remark, f.score FROM $wpdb->douban_movies m LEFT JOIN $wpdb->douban_faves f ON m.id = f.subject_id WHERE f.status = 'done'{$filter} ORDER BY f.create_time DESC LIMIT 40 OFFSET {$offset}");
-        // $count     = count($schedules);
+        $subjects = $wpdb->get_results("SELECT m.*, f.create_time, f.remark, f.score FROM $wpdb->douban_movies m LEFT JOIN $wpdb->douban_faves f ON m.id = f.subject_id WHERE f.status = 'done'{$filter} ORDER BY f.create_time DESC LIMIT 40 OFFSET {$offset}");
 
-        // self::$core_schedules = get_core_schedules();
-        // self::$used_schedules = array_unique(wp_list_pluck(Event\get(), 'schedule'));
-
-        $this->items = $schedules;
+        $this->items = $subjects;
 
         $this->set_pagination_args(array(
             'total_items' => $this->get_subject_count($_GET['subject_type']),
             'per_page'    => 40,
-            //'total_pages' => 1,
         ));
     }
 
     public function get_views()
     {
-        //$filtered = self::get_filtered_events( $this->all_events );
 
         $views = array();
         $hooks_type = (!empty($_GET['subject_type']) ? $_GET['subject_type'] : 'all');
@@ -93,7 +87,6 @@ class Subject_List_Table extends \WP_List_Table
             'music'   => '音乐',
             'game'   => '游戏',
             'drama'   => '舞台剧',
-
         );
 
         /**
@@ -134,8 +127,8 @@ class Subject_List_Table extends \WP_List_Table
     {
         global $wpdb;
         $filter = $type && $type != 'all' ? " AND f.type = '{$type}'" : '';
-        $schedules = $wpdb->get_results("SELECT m.id FROM $wpdb->douban_movies m LEFT JOIN $wpdb->douban_faves f ON m.id = f.subject_id WHERE f.status = 'done'{$filter}");
-        return count($schedules);
+        $subjects = $wpdb->get_results("SELECT m.id FROM $wpdb->douban_movies m LEFT JOIN $wpdb->douban_faves f ON m.id = f.subject_id WHERE f.status = 'done'{$filter}");
+        return count($subjects);
     }
 
     // protected function extra_tablenav($which)
@@ -233,15 +226,5 @@ class Subject_List_Table extends \WP_List_Table
             'remark' => '我的短评',
             'score' => '我的评分'
         );
-    }
-
-    /**
-     * Outputs a message when there are no items to show in the table.
-     *
-     * @return void
-     */
-    public function no_items()
-    {
-        esc_html_e('There are no schedules.', 'wp-crontrol');
     }
 }

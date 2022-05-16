@@ -3,12 +3,12 @@
 Plugin Name: WP-Douban
 Plugin URI: https://fatesinger.com/101005
 Description: 🎬 📖 🎵 🎮 manage your movie / book / music / game records
-Version: 4.0.3
+Version: 4.0.4
 Author: Bigfa
 Author URI: https://fatesinger.com
 */
 
-define('WPD_VERSION', '4.0.3');
+define('WPD_VERSION', '4.0.4');
 define('WPD_URL', plugins_url('', __FILE__));
 define('WPD_PATH', dirname(__FILE__));
 define('WPD_ADMIN_URL', admin_url());
@@ -131,11 +131,12 @@ function wpd_install()
         "status varchar(16)," .
         "message varchar(256)," .
         "account_id varchar(16)," .
+        "collection_id varchar(16)," .
+        "subject_id varchar(16)," .
         "PRIMARY KEY (id)" .
         ") $charset_collate;";
 
     if ($wpdb->get_var("SHOW TABLES LIKE $wpdb->douban_collection") != $wpdb->douban_collection) dbDelta($create_table['douban_collection']);
-
     if ($wpdb->get_var("SHOW TABLES LIKE $wpdb->douban_collection") != $wpdb->douban_collection) dbDelta($create_table['douban_faves']);
     if ($wpdb->get_var("SHOW TABLES LIKE $wpdb->douban_genres") != $wpdb->douban_genres) dbDelta($create_table['douban_genres']);
     if ($wpdb->get_var("SHOW TABLES LIKE $wpdb->douban_movies") != $wpdb->douban_movies) dbDelta($create_table['douban_movies']);

@@ -21,19 +21,6 @@ class db_sync extends WPD_Douban
         return $interests;
     }
 
-    public function add_log($type = 'movie')
-    {
-        global $wpdb;
-        $wpdb->insert($wpdb->douban_log, [
-            'type' => $type,
-            'action' => 'sync',
-            'create_time' => date('Y-m-d H:i:s'),
-            'status' => 'success',
-            'message' => 'sync success',
-            'account_id' => $this->uid
-        ]);
-    }
-
     public function db_sync_data()
     {
         if (!$this->uid) {
@@ -48,7 +35,7 @@ class db_sync extends WPD_Douban
         ];
         global $wpdb;
 
-        //$this->get_collections('ECHMOGZLQ');
+        if ($this->db_get_setting('top250')) $this->get_collections('movie_top250');
         foreach ($sync_types as $type) {
             $confition = true;
             $i = 0;

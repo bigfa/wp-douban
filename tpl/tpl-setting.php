@@ -10,7 +10,7 @@
                 <tr valign="top">
                     <th scope="row"><label>使用方法</label></th>
                     <td>
-                        <p>请查看<a href="https://fatesinger.com/74369" target="_blank">帮助文章</a></p>
+                        <p>请查看<a href="https://fatesinger.com/101050" target="_blank">帮助文章</a></p>
                     </td>
                 </tr>
                 <tr valign="top">
@@ -62,9 +62,18 @@
                     <th scope="row"><label for="<?php echo db_setting_key('disable_scripts'); ?>">静态文件</label></th>
                     <td>
                         <label for="<?php echo db_setting_key('disbale_scripts'); ?>">
-                            <input type="checkbox" name="<?php echo db_setting_key('disbale_scripts'); ?>" id="download_image" value="1" <?php if (db_get_setting("disbale_scripts")) echo 'checked="checked"'; ?>>
+                            <input type="checkbox" name="<?php echo db_setting_key('disbale_scripts'); ?>" id="disable_scripts" value="1" <?php if (db_get_setting("disbale_scripts")) echo 'checked="checked"'; ?>>
                         </label>
                         <p class="description">开启不加载插件静态文件。</p>
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <th scope="row"><label for="<?php echo db_setting_key('top250'); ?>">豆瓣Top250</label></th>
+                    <td>
+                        <label for="<?php echo db_setting_key('disbale_scripts'); ?>">
+                            <input type="checkbox" name="<?php echo db_setting_key('top250'); ?>" id="top250" value="1" <?php if (db_get_setting("top250")) echo 'checked="checked"'; ?>>
+                        </label>
+                        <p class="description">开启该选项则会定期同步豆瓣top250 清单，当条目在清单中时展示top250 标识。</p>
                     </td>
                 </tr>
             </tbody>
