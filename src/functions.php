@@ -183,7 +183,7 @@ class WPD_Douban
         $top250 = $this->get_collection('movie_top250');
 
         if ($genre) {
-            $goods = $wpdb->get_results("SELECT m.*, f.create_time , f.remark FROM ( $wpdb->douban_movies m LEFT JOIN $wpdb->douban_genres g ON m.id = g.movie_id ) LEFT JOIN $wpdb->douban_faves f ON m.id = f.subject_id WHERE f.type = '{$type}' AND f.status = 'done' AND g.name IN ('{$genre}') ORDER BY f.create_time DESC LIMIT {$this->perpage} OFFSET {$offset}");
+            $goods = $wpdb->get_results("SELECT m.*, f.create_time , f.remark FROM ( $wpdb->douban_movies m LEFT JOIN $wpdb->douban_genres g ON m.id = g.movie_id ) LEFT JOIN $wpdb->douban_faves f ON m.id = f.subject_id WHERE f.type = '{$type}' AND f.status = 'done' AND g.name IN ('{$genre}') GROUP BY m.id ORDER BY f.create_time DESC LIMIT {$this->perpage} OFFSET {$offset}");
         } else {
             $goods = $wpdb->get_results("SELECT m.*, f.create_time, f.remark FROM $wpdb->douban_movies m LEFT JOIN $wpdb->douban_faves f ON m.id = f.subject_id WHERE f.type = '{$type}' AND f.status = 'done' {$filterTime} ORDER BY f.create_time DESC LIMIT {$this->perpage} OFFSET {$offset}");
         }
