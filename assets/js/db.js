@@ -4,6 +4,7 @@ class WP_DOUBAN {
         this.finished = false;
         this.paged = 1;
         this.genre = "";
+        this.subjects = [];
         this._create();
     }
 
@@ -44,6 +45,7 @@ class WP_DOUBAN {
             this.genre = self.innerText;
             this.paged = 1;
             this.finished = false;
+            this.subjects = [];
             this._fetchData();
         });
     }
@@ -62,31 +64,17 @@ class WP_DOUBAN {
             .then((t) => {
                 // @ts-ignore
                 if (t.length) {
-                    // @ts-ignore
-                    document.querySelector(".db--list").innerHTML += t
-                        .map((item) => {
-                            return `<div class="db--item">${
-                                item.is_top250
-                                    ? '<span class="top250">Top 250</span>'
-                                    : ""
-                            }<img src="${
-                                item.poster
-                            }" referrerpolicy="no-referrer" class="db--image"><div class="ipc-signpost JiEun">${
-                                item.create_time
-                            }</div><div class="db--score JiEun">${
-                                item.douban_score > 0
-                                    ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" ><path d="M12 20.1l5.82 3.682c1.066.675 2.37-.322 2.09-1.584l-1.543-6.926 5.146-4.667c.94-.85.435-2.465-.799-2.567l-6.773-.602L13.29.89a1.38 1.38 0 0 0-2.581 0l-2.65 6.53-6.774.602C.052 8.126-.453 9.74.486 10.59l5.147 4.666-1.542 6.926c-.28 1.262 1.023 2.26 2.09 1.585L12 20.099z"></path></svg>' +
-                                      item.douban_score
-                                    : ""
-                            }${
-                                item.year > 0 ? " · " + item.year : ""
-                            }</div><div class="db--title"><a href="${
-                                item.link
-                            }" target="_blank">${item.name}</a></div>
-                </div>
-                </div>`;
-                        })
-                        .join("");
+                    if (
+                        document
+                            .querySelector(".db--list")
+                            .classList.contains("db--list__card")
+                    ) {
+                        this.subjects = [...this.subjects, ...t];
+                        this._randerDateTemplate();
+                    } else {
+                        this.subjects = [...this.subjects, ...t];
+                        this._randerListTemplate();
+                    }
                     document
                         .querySelector(".lds-ripple")
                         .classList.add("u-hide");
@@ -97,6 +85,85 @@ class WP_DOUBAN {
                         .classList.add("u-hide");
                 }
             });
+    }
+
+    _randerDateTemplate() {
+        const result = this.subjects.reduce((result, item) => {
+            if (
+                Object.prototype.hasOwnProperty.call(result, item.create_time)
+            ) {
+                result[item.create_time].push(item);
+            } else {
+                result[item.create_time] = [item];
+            }
+            return result;
+        }, {});
+        let html = ``;
+        for (let key in result) {
+            const date = new Date(key);
+            html += `<div class="db--listBydate"><div class="db--titleDate JiEun">
+            <div class="db--titleDate__year">${date.getFullYear()}</div><div class="db--titleDate__day">${date
+                .getDate()
+                .toString()
+                .padStart(
+                    2,
+                    "0"
+                )}</div><div class="db--titleDate__month">${date.toLocaleString(
+                "en-US",
+                {
+                    month: "short",
+                }
+            )}</div></div><div class="db--dateList__card">`;
+            html += result[key]
+                .map((movie) => {
+                    return `<div class="db--item">${
+                        movie.is_top250
+                            ? '<span class="top250">Top 250</span>'
+                            : ""
+                    }<img src="${
+                        movie.poster
+                    }" referrerpolicy="no-referrer" class="db--image"><div class="db--score JiEun">${
+                        movie.douban_score > 0
+                            ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" ><path d="M12 20.1l5.82 3.682c1.066.675 2.37-.322 2.09-1.584l-1.543-6.926 5.146-4.667c.94-.85.435-2.465-.799-2.567l-6.773-.602L13.29.89a1.38 1.38 0 0 0-2.581 0l-2.65 6.53-6.774.602C.052 8.126-.453 9.74.486 10.59l5.147 4.666-1.542 6.926c-.28 1.262 1.023 2.26 2.09 1.585L12 20.099z"></path></svg>' +
+                              movie.douban_score
+                            : ""
+                    }${
+                        movie.year > 0 ? " · " + movie.year : ""
+                    }</div><div class="db--title"><a href="${
+                        movie.link
+                    }" target="_blank">${movie.name}</a></div>
+    
+    </div>`;
+                })
+                .join("");
+            html += `</div></div>`;
+        }
+        document.querySelector(".db--list").innerHTML = html;
+    }
+
+    _randerListTemplate() {
+        document.querySelector(".db--list").innerHTML = this.subjects
+            .map((item) => {
+                return `<div class="db--item">${
+                    item.is_top250 ? '<span class="top250">Top 250</span>' : ""
+                }<img src="${
+                    item.poster
+                }" referrerpolicy="no-referrer" class="db--image"><div class="ipc-signpost JiEun">${
+                    item.create_time
+                }</div><div class="db--score JiEun">${
+                    item.douban_score > 0
+                        ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" ><path d="M12 20.1l5.82 3.682c1.066.675 2.37-.322 2.09-1.584l-1.543-6.926 5.146-4.667c.94-.85.435-2.465-.799-2.567l-6.773-.602L13.29.89a1.38 1.38 0 0 0-2.581 0l-2.65 6.53-6.774.602C.052 8.126-.453 9.74.486 10.59l5.147 4.666-1.542 6.926c-.28 1.262 1.023 2.26 2.09 1.585L12 20.099z"></path></svg>' +
+                          item.douban_score
+                        : ""
+                }${
+                    item.year > 0 ? " · " + item.year : ""
+                }</div><div class="db--title"><a href="${
+                    item.link
+                }" target="_blank">${item.name}</a></div>
+                </div>
+                </div>`;
+            })
+            .join("");
     }
 
     _handleScroll() {
@@ -143,6 +210,7 @@ class WP_DOUBAN {
             self.classList.add("current");
             this.paged = 1;
             this.finished = false;
+            this.subjects = [];
             this._fetchData();
         });
     }

@@ -5,7 +5,7 @@
  */
 class WPD_Douban
 {
-    const VERSION = '4.0.5';
+    const VERSION = '4.0.6';
     private $base_url = 'https://fatesinger.com/dbapi/';
 
     public function __construct()
@@ -46,7 +46,8 @@ class WPD_Douban
     {
         extract(shortcode_atts(
             array(
-                'types' => ''
+                'types' => '',
+                'style' => ''
             ),
             $atts
         ));
@@ -54,7 +55,7 @@ class WPD_Douban
         if (empty($types)) {
             return;
         }
-        return $this->render_template($types);
+        return $this->render_template($types, $style);
     }
 
     public function list_collection($atts, $content = null)
@@ -110,7 +111,7 @@ class WPD_Douban
         ';
     }
 
-    public function render_template($include_types = ['movie', 'music', 'book', 'game', 'drama'])
+    public function render_template($include_types = ['movie', 'music', 'book', 'game', 'drama'], $style)
     {
         $types = ['movie', 'music', 'book', 'game', 'drama'];
         $nav = '';
@@ -129,7 +130,7 @@ class WPD_Douban
     </nav>
     <div class="db--genres u-hide">
     </div>
-    <div class="db--list"' . $only . '>
+    <div class="db--list' . ($style ? ' db--list__' . $style  : '') . '"' . $only . '>
     </div>
     <div class="block-more block-more__centered">
         <div class="lds-ripple">
