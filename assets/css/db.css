@@ -338,6 +338,7 @@
 .db--listBydate {
     display: flex;
     align-items: flex-start;
+    margin-top: 15px;
 }
 
 @media (max-width: 600px) {
@@ -413,4 +414,11 @@
 .block-more__centered {
     display: flex;
     justify-content: center;
+}
+
+.db--copyright {
+    font-size: 12px;
+    text-align: right;
+    margin-top: 20px;
+    color: rgba(0, 0, 0, 0.6);
 }

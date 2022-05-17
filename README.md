@@ -6,9 +6,7 @@
 
 ## 快速配置
 
-`WPD_CACHE_IMAGE` 设置为 `false` 可以关闭图片缓存。
-
-如需自定义样式，可将`WPD_LOAD_SCRIPTS` 设置为 `false` ，将不载入插件的静态文件。
+[帮助文档](https://fatesinger.com/101050)
 
 ## 插入方式
 

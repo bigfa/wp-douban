@@ -5,7 +5,7 @@
  */
 class WPD_Douban
 {
-    const VERSION = '4.0.6';
+    const VERSION = '4.0.7';
     private $base_url = 'https://fatesinger.com/dbapi/';
 
     public function __construct()
@@ -135,7 +135,7 @@ class WPD_Douban
     <div class="block-more block-more__centered">
         <div class="lds-ripple">
         </div>
-    </div></section>';
+    </div><div class="db--copyright">Rendered by <a href="https://fatesinger.com/101005" target="_blank">WP-Douban</a></div></section>';
     }
 
     public function wpd_register_rest_routes()
@@ -178,12 +178,12 @@ class WPD_Douban
         global $wpdb;
         $offset = $data['paged'] ? ($data['paged'] - 1) * $this->perpage : 0;
         $type = $data['type'] ? $data['type'] : 'movie';
-        $genre = $data['genre'] ? $data['genre'] : '';
+        $genre = $data['genre'] ? implode("','", json_decode($data['genre'], true)) : '';
         $filterTime = ($data['start_time'] && $data['end_time']) ? " AND f.create_time BETWEEN '{$data['start_time']}' AND '{$data['end_time']}'" : '';
         $top250 = $this->get_collection('movie_top250');
 
         if ($genre) {
-            $goods = $wpdb->get_results("SELECT m.*, f.create_time , f.remark FROM ( $wpdb->douban_movies m LEFT JOIN $wpdb->douban_genres g ON m.id = g.movie_id ) LEFT JOIN $wpdb->douban_faves f ON m.id = f.subject_id WHERE f.type = '{$type}' AND f.status = 'done' AND g.name = '{$genre}' ORDER BY f.create_time DESC LIMIT {$this->perpage} OFFSET {$offset}");
+            $goods = $wpdb->get_results("SELECT m.*, f.create_time , f.remark FROM ( $wpdb->douban_movies m LEFT JOIN $wpdb->douban_genres g ON m.id = g.movie_id ) LEFT JOIN $wpdb->douban_faves f ON m.id = f.subject_id WHERE f.type = '{$type}' AND f.status = 'done' AND g.name IN ('{$genre}') ORDER BY f.create_time DESC LIMIT {$this->perpage} OFFSET {$offset}");
         } else {
             $goods = $wpdb->get_results("SELECT m.*, f.create_time, f.remark FROM $wpdb->douban_movies m LEFT JOIN $wpdb->douban_faves f ON m.id = f.subject_id WHERE f.type = '{$type}' AND f.status = 'done' {$filterTime} ORDER BY f.create_time DESC LIMIT {$this->perpage} OFFSET {$offset}");
         }
@@ -333,7 +333,7 @@ class WPD_Douban
 
     public function wpd_load_scripts()
     {
-        wp_enqueue_style('wpd-css', WPD_URL . "/assets/css/style.css", array(), WPD_VERSION, 'screen');
+        wp_enqueue_style('wpd-css', WPD_URL . "/assets/css/db.min.css", array(), WPD_VERSION, 'screen');
         wp_enqueue_script('wpdjs', WPD_URL . "/assets/js/db.min.js", array(), WPD_VERSION, true);
         wp_localize_script('wpdjs', 'wpd_base', array(
             'api' => get_rest_url(),

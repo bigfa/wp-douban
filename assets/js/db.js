@@ -1,9 +1,11 @@
 class WP_DOUBAN {
     constructor() {
+        this.ver = "1.0.1";
         this.type = "movie";
         this.finished = false;
         this.paged = 1;
-        this.genre = "";
+        this.genre_list = [];
+        this.genre = [];
         this.subjects = [];
         this._create();
     }
@@ -21,33 +23,47 @@ class WP_DOUBAN {
             .then((t) => {
                 // @ts-ignore
                 if (t.length) {
-                    document.querySelector(".db--genres").innerHTML = t
-                        .map((item) => {
-                            return `<span class="db--genreItem">${item.name}</span>`;
-                        })
-                        .join("");
-                    this._handleGenreClick();
+                    this.genre_list = t;
+                    this._renderGenre();
                 }
             });
     }
 
     _handleGenreClick() {
         this.on("click", ".db--genreItem", (t) => {
-            if (t.target.classList.contains("is-active")) return;
+            const self = t.target;
+            if (self.classList.contains("is-active")) {
+                const index = this.genre.indexOf(self.innerText);
+                self.classList.remove("is-active");
+                this.genre.splice(index, 1);
+                this.paged = 1;
+                this.finished = false;
+                this.subjects = [];
+                this._fetchData();
+                return;
+            }
             document.querySelector(".db--list").innerHTML = "";
             document.querySelector(".lds-ripple").classList.remove("u-hide");
-            if (document.querySelector(".db--genreItem.is-active"))
-                document
-                    .querySelector(".db--genreItem.is-active")
-                    .classList.remove("is-active");
-            const self = t.target;
+
             self.classList.add("is-active");
-            this.genre = self.innerText;
+            this.genre.push(self.innerText);
             this.paged = 1;
             this.finished = false;
             this.subjects = [];
             this._fetchData();
+            return;
         });
+    }
+
+    _renderGenre() {
+        document.querySelector(".db--genres").innerHTML = this.genre_list
+            .map((item) => {
+                return `<span class="db--genreItem${
+                    this.genre_list.includes(item.name) ? " is-active" : ""
+                }">${item.name}</span>`;
+            })
+            .join("");
+        this._handleGenreClick();
     }
 
     _fetchData() {
@@ -58,7 +74,7 @@ class WP_DOUBAN {
                 "&paged=" +
                 this.paged +
                 "&genre=" +
-                this.genre
+                JSON.stringify(this.genre)
         )
             .then((response) => response.json())
             .then((t) => {
@@ -89,31 +105,21 @@ class WP_DOUBAN {
 
     _randerDateTemplate() {
         const result = this.subjects.reduce((result, item) => {
-            if (
-                Object.prototype.hasOwnProperty.call(result, item.create_time)
-            ) {
-                result[item.create_time].push(item);
+            const date = new Date(item.create_time);
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const key = `${year}-${month.toString().padStart(2, "0")}`;
+            if (Object.prototype.hasOwnProperty.call(result, key)) {
+                result[key].push(item);
             } else {
-                result[item.create_time] = [item];
+                result[key] = [item];
             }
             return result;
         }, {});
         let html = ``;
         for (let key in result) {
-            const date = new Date(key);
-            html += `<div class="db--listBydate"><div class="db--titleDate JiEun">
-            <div class="db--titleDate__year">${date.getFullYear()}</div><div class="db--titleDate__day">${date
-                .getDate()
-                .toString()
-                .padStart(
-                    2,
-                    "0"
-                )}</div><div class="db--titleDate__month">${date.toLocaleString(
-                "en-US",
-                {
-                    month: "short",
-                }
-            )}</div></div><div class="db--dateList__card">`;
+            const date = key.split("-");
+            html += `<div class="db--listBydate"><div class="db--titleDate JiEun"><div class="db--titleDate__day">${date[1]}</div><div class="db--titleDate__month">${date[0]}</div></div><div class="db--dateList__card">`;
             html += result[key]
                 .map((movie) => {
                     return `<div class="db--item">${
@@ -192,12 +198,13 @@ class WP_DOUBAN {
     _handleNavClick() {
         this.on("click", ".db--navItem", (t) => {
             if (t.target.classList.contains("current")) return;
-            this.genre = "";
+            this.genre = [];
             this.type = t.target.dataset.type;
             if (this.type == "movie") {
                 document
                     .querySelector(".db--genres")
                     .classList.remove("u-hide");
+                this._renderGenre();
             } else {
                 document.querySelector(".db--genres").classList.add("u-hide");
             }
