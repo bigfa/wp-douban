@@ -9,7 +9,7 @@ require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 /**
  * Cron schedule list table class.
  */
-class Subject_List_Table extends \WP_List_Table
+class Subject_ALL_Table extends \WP_List_Table
 {
 
     /**
@@ -62,9 +62,9 @@ class Subject_List_Table extends \WP_List_Table
 
         $offset = ($currentPage - 1) * 50;
 
-        $filter = !empty($_GET['subject_type']) && $_GET['subject_type'] != 'all' ? " AND f.type = '{$_GET['subject_type']}'" : '';
+        $filter = !empty($_GET['subject_type']) && $_GET['subject_type'] != 'all' ? " AND m.type = '{$_GET['subject_type']}'" : '';
 
-        $subjects = $wpdb->get_results("SELECT m.*, f.create_time, f.remark, f.score FROM $wpdb->douban_movies m LEFT JOIN $wpdb->douban_faves f ON m.id = f.subject_id WHERE f.status = 'done'{$filter} ORDER BY f.create_time DESC LIMIT 40 OFFSET {$offset}");
+        $subjects = $wpdb->get_results("SELECT * FROM $wpdb->douban_movies m WHERE 1=1{$filter} ORDER BY m.id DESC LIMIT 40 OFFSET {$offset}");
 
         $this->items = $subjects;
 
@@ -126,8 +126,8 @@ class Subject_List_Table extends \WP_List_Table
     protected function get_subject_count($type)
     {
         global $wpdb;
-        $filter = $type && $type != 'all' ? " AND f.type = '{$type}'" : '';
-        $subjects = $wpdb->get_results("SELECT m.id FROM $wpdb->douban_movies m LEFT JOIN $wpdb->douban_faves f ON m.id = f.subject_id WHERE f.status = 'done'{$filter}");
+        $filter = $type && $type != 'all' ? " AND m.type = '{$type}'" : '';
+        $subjects = $wpdb->get_results("SELECT m.id FROM $wpdb->douban_movies m  WHERE 1=1{$filter}");
         return count($subjects);
     }
 
@@ -197,22 +197,14 @@ class Subject_List_Table extends \WP_List_Table
 
         $link = array(
             'page'                  => 'subject',
-            'wpd_action'       => 'cancel_mark',
+            'wpd_action'       => 'mark',
             'subject_id'           => rawurlencode($event->id),
             'subject_type'          => rawurlencode($event->type),
         );
         $link = add_query_arg($link, admin_url('admin.php'));
         $link = wp_nonce_url($link, "wpd_subject_{$event->id}");
 
-        $links[] = "<a href='" . esc_url($link) . "'>取消标记</a>";
-
-        $link = array(
-            'page'                  => 'subject_edit',
-            'subject_id'           => rawurlencode($event->id),
-            'subject_type'          => rawurlencode($event->type),
-        );
-        $link = add_query_arg($link, admin_url('admin.php'));
-        $links[] = "<a href='" . esc_url($link) . "'>编辑</a>";
+        $links[] = "<a href='" . esc_url($link) . "'>标记</a>";
 
         return $this->row_actions($links);
     }
