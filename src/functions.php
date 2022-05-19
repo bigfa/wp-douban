@@ -159,7 +159,7 @@ class WPD_Douban
         foreach ($goods as $good) {
             $data[] = $good;
         }
-        return $data;
+        return new WP_REST_Response($data);
     }
 
     public function get_collection($data)
@@ -198,7 +198,7 @@ class WPD_Douban
             }
             $data[] = $good;
         }
-        return $data;
+        return new WP_REST_Response($data);
     }
 
     function wp_embed_handler_doubandrama($matches, $attr, $url, $rawattr)

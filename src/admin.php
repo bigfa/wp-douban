@@ -106,31 +106,31 @@ class WPD_ADMIN
         // }
     }
 
-    public function import()
-    {
-        global $wpdb;
-        if (!isset($_FILES['file'])) {
-            wp_send_json_error(esc_html__('File missing', 'mmp'));
-        }
+    // public function import()
+    // {
+    //     global $wpdb;
+    //     if (!isset($_FILES['file'])) {
+    //         wp_send_json_error(esc_html__('File missing', 'mmp'));
+    //     }
 
-        $details = array();
-        $file = $_FILES['file']['tmp_name'];
-        $handle = fopen($file, 'r');
-        while (($data = fgetcsv($handle)) !== false) {
-            $douban_id = explode('/', $data['6'])[4];
-            if ($douban_id) {
-                $movie = $wpdb->get_results("SELECT * FROM wp_douban_movies WHERE douban_id = '{$douban_id}'");
-                $movie = $movie[0];
-                if ($movie->name == '未知电影' || $movie->name == '未知电视剧') {
-                    $wpdb->update('wp_douban_movies', ['name' => trim(explode('/',  $data['0'])[0]), 'poster' => str_replace('webp', 'jpg', $data['7'])], ['douban_id' => $douban_id]);
-                }
-            }
-            $details[] = $data;
-        }
-        fclose($handle);
+    //     $details = array();
+    //     $file = $_FILES['file']['tmp_name'];
+    //     $handle = fopen($file, 'r');
+    //     while (($data = fgetcsv($handle)) !== false) {
+    //         $douban_id = explode('/', $data['6'])[4];
+    //         if ($douban_id) {
+    //             $movie = $wpdb->get_results("SELECT * FROM wp_douban_movies WHERE douban_id = '{$douban_id}'");
+    //             $movie = $movie[0];
+    //             if ($movie->name == '未知电影' || $movie->name == '未知电视剧') {
+    //                 $wpdb->update('wp_douban_movies', ['name' => trim(explode('/',  $data['0'])[0]), 'poster' => str_replace('webp', 'jpg', $data['7'])], ['douban_id' => $douban_id]);
+    //             }
+    //         }
+    //         $details[] = $data;
+    //     }
+    //     fclose($handle);
 
-        wp_send_json_success(array(
-            'details' => $details
-        ));
-    }
+    //     wp_send_json_success(array(
+    //         'details' => $details
+    //     ));
+    // }
 }

@@ -60,7 +60,7 @@ class Subject_List_Table extends \WP_List_Table
 
         $currentPage = $this->get_pagenum();
 
-        $offset = ($currentPage - 1) * 50;
+        $offset = ($currentPage - 1) * 40;
 
         $filter = !empty($_GET['subject_type']) && $_GET['subject_type'] != 'all' ? " AND f.type = '{$_GET['subject_type']}'" : '';
         $filter .= !empty($_GET['s']) ? " AND m.name LIKE '%{$_GET['s']}%'" : '';

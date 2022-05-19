@@ -30,7 +30,7 @@
                 <tr valign="top">
                     <th scope="row"><label for="url">评分</label></th>
                     <td>
-                        <input name="score" type="number" value="<?php echo $fave->score ? $fave->score : 0 ?>" min="0" max="5"></input>
+                        <input name="score" type="number" value="<?php echo $fave->score ? $fave->score : '' ?>" min="0" max="5"></input>
                     </td>
                 </tr>
             </tbody>
