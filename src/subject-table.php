@@ -63,7 +63,7 @@ class Subject_List_Table extends \WP_List_Table
         $offset = ($currentPage - 1) * 50;
 
         $filter = !empty($_GET['subject_type']) && $_GET['subject_type'] != 'all' ? " AND f.type = '{$_GET['subject_type']}'" : '';
-
+        $filter .= !empty($_GET['s']) ? " AND m.name LIKE '%{$_GET['s']}%'" : '';
         $subjects = $wpdb->get_results("SELECT m.*, f.create_time, f.remark, f.score FROM $wpdb->douban_movies m LEFT JOIN $wpdb->douban_faves f ON m.id = f.subject_id WHERE f.status = 'done'{$filter} ORDER BY f.create_time DESC LIMIT 40 OFFSET {$offset}");
 
         $this->items = $subjects;
@@ -127,6 +127,7 @@ class Subject_List_Table extends \WP_List_Table
     {
         global $wpdb;
         $filter = $type && $type != 'all' ? " AND f.type = '{$type}'" : '';
+        $filter .= !empty($_GET['s']) ? " AND m.name LIKE '%{$_GET['s']}%'" : '';
         $subjects = $wpdb->get_results("SELECT m.id FROM $wpdb->douban_movies m LEFT JOIN $wpdb->douban_faves f ON m.id = f.subject_id WHERE f.status = 'done'{$filter}");
         return count($subjects);
     }

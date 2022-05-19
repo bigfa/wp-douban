@@ -63,7 +63,7 @@ class Subject_ALL_Table extends \WP_List_Table
         $offset = ($currentPage - 1) * 50;
 
         $filter = !empty($_GET['subject_type']) && $_GET['subject_type'] != 'all' ? " AND m.type = '{$_GET['subject_type']}'" : '';
-
+        $filter .= !empty($_GET['s']) ? " AND m.name LIKE '%{$_GET['s']}%'" : '';
         $subjects = $wpdb->get_results("SELECT * FROM $wpdb->douban_movies m WHERE 1=1{$filter} ORDER BY m.id DESC LIMIT 40 OFFSET {$offset}");
 
         $this->items = $subjects;
@@ -127,6 +127,7 @@ class Subject_ALL_Table extends \WP_List_Table
     {
         global $wpdb;
         $filter = $type && $type != 'all' ? " AND m.type = '{$type}'" : '';
+        $filter .= !empty($_GET['s']) ? " AND m.name LIKE '%{$_GET['s']}%'" : '';
         $subjects = $wpdb->get_results("SELECT m.id FROM $wpdb->douban_movies m  WHERE 1=1{$filter}");
         return count($subjects);
     }
@@ -188,16 +189,6 @@ class Subject_ALL_Table extends \WP_List_Table
         $fave = $wpdb->get_results("SELECT * FROM $wpdb->douban_faves WHERE `subject_id` = {$event->id}");
 
         $links = array();
-        // $link = array(
-        //     'page'                  => 'crontrol_admin_manage_page',
-        //     'crontrol_action'       => 'run-cron',
-        //     'crontrol_id'           => rawurlencode($event->hook),
-        //     'crontrol_sig'          => rawurlencode($event->sig),
-        //     'crontrol_next_run_utc' => rawurlencode($event->time),
-        // );
-        // $link = add_query_arg($link, admin_url('tools.php'));
-
-        // $links[] = "<a href='" . esc_url($link) . "'>" . esc_html__('Edit', 'wp-crontrol') . '</a>';
 
         $link = array(
             'page'                  => 'subject',
