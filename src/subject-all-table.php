@@ -183,6 +183,10 @@ class Subject_ALL_Table extends \WP_List_Table
             return '';
         }
 
+        global $wpdb;
+
+        $fave = $wpdb->get_results("SELECT * FROM $wpdb->douban_faves WHERE `subject_id` = {$event->id}");
+
         $links = array();
         // $link = array(
         //     'page'                  => 'crontrol_admin_manage_page',
@@ -197,14 +201,14 @@ class Subject_ALL_Table extends \WP_List_Table
 
         $link = array(
             'page'                  => 'subject',
-            'wpd_action'       => 'mark',
+            'wpd_action'       => !empty($fave) ? 'cancel_mark' : 'mark',
             'subject_id'           => rawurlencode($event->id),
             'subject_type'          => rawurlencode($event->type),
         );
         $link = add_query_arg($link, admin_url('admin.php'));
         $link = wp_nonce_url($link, "wpd_subject_{$event->id}");
 
-        $links[] = "<a href='" . esc_url($link) . "'>标记</a>";
+        $links[] = "<a href='" . esc_url($link) . "'>" . (!empty($fave) ? '取消标记' : '标记') . "</a>";
 
         return $this->row_actions($links);
     }
@@ -221,9 +225,6 @@ class Subject_ALL_Table extends \WP_List_Table
             'poster' => '封面',
             'douban_score' => '豆瓣评分',
             'card_subtitle' => '描述',
-            'create_time' => '时间',
-            'remark' => '我的短评',
-            'score' => '我的评分'
         );
     }
 }
