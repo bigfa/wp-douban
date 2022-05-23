@@ -24,7 +24,7 @@
                                     'default' => ''
                                 ),
                                 array(
-                                    'title' => '每页显示条目数量',
+                                    'title' => '每页显示条目数',
                                     'key' => 'perpage',
                                     'default' => '70'
                                 )
@@ -64,7 +64,7 @@
                         <label for="<?php echo db_setting_key('disable_scripts'); ?>">
                             <input type="checkbox" name="<?php echo db_setting_key('disable_scripts'); ?>" id="disable_scripts" value="1" <?php if (db_get_setting("disable_scripts")) echo 'checked="checked"'; ?>>
                         </label>
-                        <p class="description">开启不加载插件静态文件。</p>
+                        <p class="description">开启后将不加载插件自带的静态文件。</p>
                     </td>
                 </tr>
                 <tr valign="top">
@@ -73,7 +73,7 @@
                         <label for="<?php echo db_setting_key('top250'); ?>">
                             <input type="checkbox" name="<?php echo db_setting_key('top250'); ?>" id="top250" value="1" <?php if (db_get_setting("top250")) echo 'checked="checked"'; ?>>
                         </label>
-                        <p class="description">开启该选项则会定期同步豆瓣top250 清单，当条目在清单中时展示top250 标识。</p>
+                        <p class="description">开启该选项则会定期同步豆瓣<code>top250</code> 清单，当条目在清单中时展示<code>top250</code> 标识。</p>
                     </td>
                 </tr>
             </tbody>
