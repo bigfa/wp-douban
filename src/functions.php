@@ -143,11 +143,13 @@ class WPD_Douban
         register_rest_route('v1', '/movies', array(
             'methods' => 'GET',
             'callback' => [$this, 'get_subjects'],
+            'permission_callback' => '__return_true',
         ));
 
         register_rest_route('v1', '/movie/genres', array(
             'methods' => 'GET',
             'callback' => [$this, 'get_genres'],
+            'permission_callback' => '__return_true',
         ));
     }
 
