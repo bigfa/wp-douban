@@ -5,7 +5,7 @@
  */
 class WPD_Douban
 {
-    const VERSION = '4.0.8';
+    const VERSION = '4.0.9';
     private $base_url = 'https://fatesinger.com/dbapi/';
 
     public function __construct()
@@ -155,8 +155,9 @@ class WPD_Douban
 
     public function get_genres($data)
     {
+        $type = $data['type'] ? $data['type'] : 'movie';
         global $wpdb;
-        $goods = $wpdb->get_results("SELECT name FROM $wpdb->douban_genres WHERE `type` = 'movie' GROUP BY `name`");
+        $goods = $wpdb->get_results("SELECT name FROM $wpdb->douban_genres WHERE `type` = '{$type}' GROUP BY `name`");
         $data = [];
         foreach ($goods as $good) {
             $data[] = $good;
@@ -339,6 +340,7 @@ class WPD_Douban
         wp_enqueue_script('wpdjs', WPD_URL . "/assets/js/db.min.js", array(), WPD_VERSION, true);
         wp_localize_script('wpdjs', 'wpd_base', array(
             'api' => get_rest_url(),
+            'token' => $this->db_get_setting('token'),
         ));
     }
 

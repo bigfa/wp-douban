@@ -1,6 +1,6 @@
 class WP_DOUBAN {
     constructor() {
-        this.ver = "1.0.1";
+        this.ver = "1.0.2";
         this.type = "movie";
         this.finished = false;
         this.paged = 1;
@@ -18,15 +18,23 @@ class WP_DOUBAN {
     }
 
     _fetchGenres() {
-        fetch(wpd_base.api + "v1/movie/genres")
+        document.querySelector(".db--genres").innerHTML = "";
+        const url = wpd_base.token
+            ? "https://node.wpista.com/v1/outer/genres?token=" +
+              wpd_base.token +
+              "&type=" +
+              this.type
+            : wpd_base.api + "v1/movie/genres?type=" + this.type;
+        fetch(url)
             .then((response) => response.json())
-            .then((t) => {
-                // @ts-ignore
+            .then((data) => {
+                const t = wpd_base.token ? data.data : data;
                 if (t.length) {
                     this.genre_list = t;
                     this._renderGenre();
                 }
             });
+        return true;
     }
 
     _handleGenreClick() {
@@ -67,17 +75,21 @@ class WP_DOUBAN {
     }
 
     _fetchData() {
+        const url = wpd_base.token
+            ? "https://node.wpista.com/v1/outer/faves?"
+            : wpd_base.api + "v1/movies?";
         fetch(
-            wpd_base.api +
-                "v1/movies?type=" +
-                this.type +
-                "&paged=" +
-                this.paged +
-                "&genre=" +
-                JSON.stringify(this.genre)
+            url +
+                new URLSearchParams({
+                    token: wpd_base.token,
+                    type: this.type,
+                    paged: this.paged,
+                    genre: JSON.stringify(this.genre),
+                })
         )
             .then((response) => response.json())
-            .then((t) => {
+            .then((data) => {
+                const t = wpd_base.token ? data.data : data;
                 // @ts-ignore
                 if (t.length) {
                     if (
@@ -200,11 +212,11 @@ class WP_DOUBAN {
             if (t.target.classList.contains("current")) return;
             this.genre = [];
             this.type = t.target.dataset.type;
-            if (this.type == "movie") {
+            if (this.type != "book") {
+                this._fetchGenres();
                 document
                     .querySelector(".db--genres")
                     .classList.remove("u-hide");
-                this._renderGenre();
             } else {
                 document.querySelector(".db--genres").classList.add("u-hide");
             }
@@ -251,17 +263,26 @@ class WP_DOUBAN {
 
     _fetchCollection(item) {
         const type = item.dataset.style ? item.dataset.style : "card";
-        fetch(
-            wpd_base.api +
-                "v1/movies?type=" +
-                item.dataset.type +
-                "&paged=1&genre=&start_time=" +
-                item.dataset.start +
-                "&end_time=" +
-                item.dataset.end
-        )
+        const url = wpd_base.token
+            ? "https://node.wpista.com/v1/outer/faves?token=" +
+              wpd_base.token +
+              "&type=" +
+              this.type +
+              "&paged=1&start_time=" +
+              item.dataset.start +
+              "&end_time=" +
+              item.dataset.end
+            : wpd_base.api +
+              "v1/movies?type=" +
+              this.type +
+              "&paged=1&start_time=" +
+              item.dataset.start +
+              "&end_time=" +
+              item.dataset.end;
+        fetch(url)
             .then((response) => response.json())
-            .then((t) => {
+            .then((data) => {
+                const t = wpd_base.token ? data.data : data;
                 // @ts-ignore
                 if (t.length) {
                     if (type == "card") {

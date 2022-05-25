@@ -27,6 +27,11 @@
                                     'title' => '每页显示条目数',
                                     'key' => 'perpage',
                                     'default' => '70'
+                                ),
+                                array(
+                                    'title' => '云token',
+                                    'key' => 'token',
+                                    'default' => ''
                                 )
                             );
                             foreach ($color as $key => $V) {
@@ -40,6 +45,7 @@
                             ?>
                         </ul>
                         <p class="description">点击你的个人主页，URL类似为<code>https://www.douban.com/people/54529369/</code>，<code>54529369</code>就是你的ID</p>
+                        <!-- <p class="description">设置<code>token</code>后将从云端获取数据，无token 请勿设置</p> -->
                     </td>
                 </tr>
                 <tr valign="top">
