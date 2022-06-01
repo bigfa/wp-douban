@@ -34,6 +34,7 @@ class db_sync extends WPD_Douban
         global $wpdb;
 
         if ($this->db_get_setting('top250')) $this->get_collections('movie_top250');
+        if ($this->db_get_setting('book_top250')) $this->get_collections('book_top250');
         if (!$this->uid) {
             return false;
         }

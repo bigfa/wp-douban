@@ -28,11 +28,11 @@
                                     'key' => 'perpage',
                                     'default' => '70'
                                 ),
-                                array(
-                                    'title' => '云token',
-                                    'key' => 'token',
-                                    'default' => ''
-                                )
+                                // array(
+                                //     'title' => '云token',
+                                //     'key' => 'token',
+                                //     'default' => ''
+                                // )
                             );
                             foreach ($color as $key => $V) {
                             ?>
@@ -74,12 +74,21 @@
                     </td>
                 </tr>
                 <tr valign="top">
-                    <th scope="row"><label for="<?php echo db_setting_key('top250'); ?>">豆瓣Top250</label></th>
+                    <th scope="row"><label for="<?php echo db_setting_key('top250'); ?>">豆瓣电影Top250</label></th>
                     <td>
                         <label for="<?php echo db_setting_key('top250'); ?>">
                             <input type="checkbox" name="<?php echo db_setting_key('top250'); ?>" id="top250" value="1" <?php if (db_get_setting("top250")) echo 'checked="checked"'; ?>>
                         </label>
-                        <p class="description">开启该选项则会定期同步豆瓣<code>top250</code> 清单，当条目在清单中时展示<code>top250</code> 标识。</p>
+                        <p class="description">开启该选项则会定期同步豆瓣电影<code>top250</code> 清单，当条目在清单中时展示<code>top250</code> 标识。</p>
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <th scope="row"><label for="<?php echo db_setting_key('book_top250'); ?>">豆瓣图书Top250</label></th>
+                    <td>
+                        <label for="<?php echo db_setting_key('top250'); ?>">
+                            <input type="checkbox" name="<?php echo db_setting_key('book_top250'); ?>" id="top250" value="1" <?php if (db_get_setting("book_top250")) echo 'checked="checked"'; ?>>
+                        </label>
+                        <p class="description">开启该选项则会定期同步豆瓣图书<code>top250</code> 清单，当条目在清单中时展示<code>top250</code> 标识。</p>
                     </td>
                 </tr>
             </tbody>

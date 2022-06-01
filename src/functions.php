@@ -5,7 +5,7 @@
  */
 class WPD_Douban
 {
-    const VERSION = '4.0.9';
+    const VERSION = '4.0.10';
     private $base_url = 'https://fatesinger.com/dbapi/';
 
     public function __construct()
@@ -183,7 +183,7 @@ class WPD_Douban
         $type = $data['type'] ? $data['type'] : 'movie';
         $genre = $data['genre'] ? implode("','", json_decode($data['genre'], true)) : '';
         $filterTime = ($data['start_time'] && $data['end_time']) ? " AND f.create_time BETWEEN '{$data['start_time']}' AND '{$data['end_time']}'" : '';
-        $top250 = $this->get_collection('movie_top250');
+        $top250 = $type == 'book' ? $this->get_collection('book_top250') : $this->get_collection('movie_top250');
 
         if ($genre) {
             $goods = $wpdb->get_results("SELECT m.*, f.create_time , f.remark FROM ( $wpdb->douban_movies m LEFT JOIN $wpdb->douban_genres g ON m.id = g.movie_id ) LEFT JOIN $wpdb->douban_faves f ON m.id = f.subject_id WHERE f.type = '{$type}' AND f.status = 'done' AND g.name IN ('{$genre}') GROUP BY m.id ORDER BY f.create_time DESC LIMIT {$this->perpage} OFFSET {$offset}");
@@ -195,7 +195,7 @@ class WPD_Douban
         foreach ($goods as $good) {
             if ($this->db_get_setting('download_image')) $good->poster = $this->wpd_save_images($good->douban_id, $good->poster);
             $good->create_time = date('Y-m-d', strtotime($good->create_time));
-            if ($top250 && $good->type == 'movie' && $this->db_get_setting('top250')) {
+            if ($top250 && ($good->type == 'movie' || $good->type == 'book') && $this->db_get_setting('top250')) {
                 $re = $wpdb->get_results("SELECT * FROM $wpdb->douban_relation WHERE `collection_id` = {$top250->id} AND  `movie_id` = {$good->id}");
                 $good->is_top250 = !empty($re);
             }
@@ -364,7 +364,7 @@ class WPD_Douban
         }
 
         foreach ($interests as $interest) {
-            $movie = $wpdb->get_results("SELECT * FROM wp_douban_movies WHERE `type` = 'movie' AND douban_id = '{$interest['id']}'");
+            $movie = $wpdb->get_results("SELECT * FROM wp_douban_movies WHERE `type` = '{$interest['type']}' AND douban_id = '{$interest['id']}'");
             $movie_id = '';
             if (empty($movie)) {
                 $wpdb->insert(
@@ -376,7 +376,7 @@ class WPD_Douban
                         'douban_score' => $interest['rating']['value'],
                         'link' => $interest['url'],
                         'year' => '',
-                        'type' => 'movie',
+                        'type' => $interest['type'],
                         'pubdate' => '',
                         'card_subtitle' => $interest['card_subtitle'],
                     )
