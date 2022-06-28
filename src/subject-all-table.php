@@ -201,6 +201,18 @@ class Subject_ALL_Table extends \WP_List_Table
 
         $links[] = "<a href='" . esc_url($link) . "'>" . (!empty($fave) ? '取消标记' : '标记') . "</a>";
 
+
+        $link = array(
+            'page'                  => 'subject_all',
+            'wpd_action'       => 'sync_subject',
+            'subject_id'           => rawurlencode($event->id),
+            'subject_type'          => rawurlencode($event->type),
+        );
+        $link = add_query_arg($link, admin_url('admin.php'));
+        $link = wp_nonce_url($link, "wpd_subject_{$event->id}");
+
+        $links[] = "<a href='" . esc_url($link) . "'>同步条目</a>";
+
         return $this->row_actions($links);
     }
 

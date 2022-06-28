@@ -1,6 +1,6 @@
 <?php
 
-class WPD_ADMIN
+class WPD_ADMIN extends WPD_Douban
 {
     public function __construct()
     {
@@ -38,6 +38,14 @@ class WPD_ADMIN
             wp_redirect($sendback);
             exit;
         }
+
+
+        if (isset($_GET['wpd_action'])  && 'sync_subject' === $_GET['wpd_action'] && wp_verify_nonce($_GET['_wpnonce'], 'wpd_subject_' . $_GET['subject_id'])) {
+            $this->sync_subject($_GET['subject_id'], $_GET['subject_type']);
+            // wp_redirect($sendback);
+            //exit;
+        }
+
 
         if (isset($_POST['wpd_action']) && 'edit_fave' === $_POST['wpd_action']) {
             global $wpdb;

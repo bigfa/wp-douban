@@ -5,7 +5,7 @@
  */
 class WPD_Douban
 {
-    const VERSION = '4.0.10';
+    const VERSION = '4.0.11';
     private $base_url = 'https://fatesinger.com/dbapi/';
 
     public function __construct()
@@ -247,6 +247,51 @@ class WPD_Douban
         $output .= $data->card_subtitle;
         $output .= '</div></div></div></div>';
         return $output;
+    }
+
+    public function sync_subject($id, $type)
+    {
+        $type = $type ? $type : 'movie';
+        global $wpdb;
+        $movie = $wpdb->get_row("SELECT * FROM $wpdb->douban_movies WHERE `type` = '{$type}' AND id = '{$id}'");
+        if (empty($movie)) {
+            return false;
+        }
+
+        if ($type == 'movie') {
+            $link = $this->base_url . "movie/" . $movie->douban_id . "?ck=xgtY&for_mobile=1";
+        } elseif ($type == 'book') {
+            $link = $this->base_url . "book/" . $movie->douban_id . "?ck=xgtY&for_mobile=1";
+        } elseif ($type == 'game') {
+            $link = $this->base_url . "game/" . $movie->douban_id . "?ck=xgtY&for_mobile=1";
+        } elseif ($type == 'drama') {
+            $link = $this->base_url . "drama/" . $movie->douban_id . "?ck=xgtY&for_mobile=1";
+        } else {
+            $link = $this->base_url . "music/" . $movie->douban_id . "?ck=xgtY&for_mobile=1";
+        }
+
+        $response = wp_remote_get($link, ['sslverify' => false]);
+        if (is_wp_error($response)) {
+            return false;
+        }
+
+        $data = json_decode(wp_remote_retrieve_body($response), true);
+        if (!$data) {
+            return false;
+        }
+
+
+        $wpdb->update($wpdb->douban_movies, [
+            'name' => $data['title'],
+            'poster' => $data['pic']['large'],
+            'douban_id' => $data['id'],
+            'douban_score' => $data['rating']['value'],
+            'link' => $data['url'],
+            'year' => '',
+            'type' => $type,
+            'pubdate' => $data['pubdate'] ? $data['pubdate'][0] : '',
+            'card_subtitle' => $data['card_subtitle']
+        ], ['id' => $movie->id]);
     }
 
     public function fetch_subject($id, $type)
