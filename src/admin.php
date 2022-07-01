@@ -8,6 +8,13 @@ class WPD_ADMIN extends WPD_Douban
         add_action('init', [$this, 'action_handle_posts']);
     }
 
+    private function wpd_remove_images($id)
+    {
+        $e = ABSPATH . 'douban_cache/' . $id . '.jpg';
+        if (!is_file($e)) return;
+        unlink($e);
+    }
+
     public function action_handle_posts()
     {
         $sendback = wp_get_referer();
@@ -62,6 +69,30 @@ class WPD_ADMIN extends WPD_Douban
             );
             $link = array(
                 'page'                  => 'subject',
+            );
+            $link = add_query_arg($link, admin_url('admin.php'));
+            wp_redirect($link);
+            exit;
+        }
+
+        if (isset($_POST['wpd_action']) && 'edit_subject' === $_POST['wpd_action']) {
+            global $wpdb;
+            $subject = $wpdb->get_row("SELECT * FROM $wpdb->douban_movies WHERE id = '{$_POST['subject_id']}'");
+            $this->wpd_remove_images($subject->douban_id);
+            $wpdb->update(
+                $wpdb->douban_movies,
+                [
+                    'name' => $_POST['name'],
+                    'douban_score' => $_POST['douban_score'],
+                    'card_subtitle' => $_POST['card_subtitle'],
+                    'poster' => $_POST['poster']
+                ],
+                [
+                    'id' => $_POST['subject_id'],
+                ]
+            );
+            $link = array(
+                'page'                  => 'subject_all',
             );
             $link = add_query_arg($link, admin_url('admin.php'));
             wp_redirect($link);
