@@ -1,5 +1,4 @@
 <div class="wrap">
-    <div id="icon-options-general" class="icon32"><br></div>
     <h2>插件设置</h2>
     <form method="post" action="options.php">
         <?php
@@ -16,7 +15,7 @@
                 <tr valign="top">
                     <th scope="row"><label>显示设置</label></th>
                     <td>
-                        <ul class="nm-color-ul">
+                        <ul class="wpd-color-ul">
                             <?php $color = array(
                                 array(
                                     'title' => '帐号ID',
@@ -36,10 +35,10 @@
                             );
                             foreach ($color as $key => $V) {
                             ?>
-                                <li class="nm-color-li">
+                                <li class="wpd-color-li">
                                     <code><?php echo $V['title']; ?></code>
                                     <?php $color = db_get_setting($V['key']) ? db_get_setting($V['key']) : $V['default']; ?>
-                                    <input name="<?php echo db_setting_key($V['key']); ?>" type="text" value="<?php echo $color; ?>" id="nm-default-color" class="regular-text nm-color-picker" />
+                                    <input name="<?php echo db_setting_key($V['key']); ?>" type="text" value="<?php echo $color; ?>" class="regular-text wpd-color-picker" />
                                 </li>
                             <?php }
                             ?>
@@ -51,7 +50,7 @@
                 <tr valign="top">
                     <th scope="row"><label for="url">自定义CSS</label></th>
                     <td>
-                        <textarea name="<?php echo db_setting_key('css'); ?>" class="nm-textarea"><?php echo db_get_setting('css'); ?></textarea>
+                        <textarea name="<?php echo db_setting_key('css'); ?>" class="wpd-textarea"><?php echo db_get_setting('css'); ?></textarea>
                         <p class="description">请输入合法的CSS。</p>
                     </td>
                 </tr>
@@ -93,23 +92,23 @@
                 </tr>
             </tbody>
         </table>
-        <div class="nm-submit-form">
-            <input type="submit" class="button-primary muhermit_submit_form_btn" name="save" value="<?php _e('Save Changes') ?>" />
+        <div class="wpd-submit-form">
+            <input type="submit" class="button-primary" name="save" value="<?php _e('Save Changes') ?>" />
         </div>
     </form>
     <style>
-        .nm-color-li {
+        .wpd-color-li {
             position: relative;
             padding-left: 120px;
         }
 
-        .nm-color-li code {
+        .wpd-color-li code {
             position: absolute;
             left: 0;
             top: 1px;
         }
 
-        .nm-textarea {
+        .wpd-textarea {
             width: 600px;
             height: 120px;
         }

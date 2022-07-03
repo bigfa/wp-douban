@@ -224,6 +224,18 @@ class Subject_ALL_Table extends \WP_List_Table
 
         $links[] = "<a href='" . esc_url($link) . "'>修改</a>";
 
+
+        $link = array(
+            'page'                  => 'subject_all',
+            'subject_id'           => rawurlencode($event->id),
+            'subject_type'          => rawurlencode($event->type),
+            'wpd_action' => 'delete_subject'
+        );
+        $link = add_query_arg($link, admin_url('admin.php'));
+        $link = wp_nonce_url($link, "wpd_subject_{$event->id}");
+
+        $links[] = "<a href='" . esc_url($link) . "'>删除</a>";
+
         return $this->row_actions($links);
     }
 

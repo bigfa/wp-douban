@@ -99,6 +99,37 @@ class WPD_ADMIN extends WPD_Douban
             exit;
         }
 
+        if (isset($_GET['wpd_action']) && 'delete_subject' === $_GET['wpd_action']) {
+            global $wpdb;
+            $subject = $wpdb->get_row("SELECT * FROM $wpdb->douban_movies WHERE id = '{$_GET['subject_id']}'");
+            $this->wpd_remove_images($subject->douban_id);
+
+            $wpdb->delete(
+                $wpdb->douban_faves,
+                [
+                    'subject_id' => $_GET['subject_id'],
+                    'type' => 'movie',
+                ]
+            );
+
+            $wpdb->delete(
+                $wpdb->douban_movies,
+                [
+                    'id' => $_GET['subject_id'],
+                ]
+            );
+
+
+            $link = array(
+                'page'                  => 'subject_all',
+            );
+            $link = add_query_arg($link, admin_url('admin.php'));
+            wp_redirect($link);
+            exit;
+        }
+
+
+
         // if (isset($_POST['crontrol_action']) && 'export-event-csv' === $_POST['crontrol_action']) {
 
         //     $type = isset($_POST['crontrol_hooks_type']) ? $_POST['crontrol_hooks_type'] : 'all';
