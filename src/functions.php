@@ -5,7 +5,7 @@
  */
 class WPD_Douban
 {
-    const VERSION = '4.1.0';
+    const VERSION = '4.1.1';
     private $base_url = 'https://fatesinger.com/dbapi/';
 
     public function __construct()
@@ -241,10 +241,13 @@ class WPD_Douban
         if (!$data) return;
         $cover = $this->db_get_setting('download_image') ? $this->wpd_save_images($id, $data->poster) : $data->poster;
         $output = '<div class="doulist-item"><div class="doulist-subject"><div class="doulist-post"><img referrerpolicy="no-referrer" src="' .  $cover . '"></div>';
+        if (db_get_setting("show_remark") && $data->fav_time) {
+            $output .= '<div class="db--viewTime JiEun">Marked ' . $data->fav_time . '</div>';
+        }
         $output .= '<div class="doulist-content"><div class="doulist-title"><a href="' . $data->link . '" class="cute" target="_blank" rel="external nofollow">' . $data->name . '</a></div>';
         $output .= '<div class="rating"><span class="allstardark"><span class="allstarlight" style="width:' . $data->douban_score * 10 . '%"></span></span><span class="rating_nums"> ' . $data->douban_score . ' </span></div>';
         $output .= '<div class="abstract">';
-        $output .= $data->card_subtitle;
+        $output .= db_get_setting("show_remark") && $data->remark ? $data->remark : $data->card_subtitle;
         $output .= '</div></div></div></div>';
         return $output;
     }
@@ -298,15 +301,20 @@ class WPD_Douban
     {
         $type = $type ? $type : 'movie';
         global $wpdb;
-        $movie = $wpdb->get_results("SELECT * FROM $wpdb->douban_movies WHERE `type` = '{$type}' AND douban_id = '{$id}'");
-        if (!empty($movie)) {
-            $movie = $movie[0];
+        $movie = $wpdb->get_row("SELECT * FROM $wpdb->douban_movies WHERE `type` = '{$type}' AND douban_id = '{$id}'");
+        if ($movie) {
             $movie->genres = [];
             $genres = $wpdb->get_results("SELECT * FROM $wpdb->douban_genres WHERE `type` = '{$type}' AND `movie_id` = {$movie->id}");
             if (!empty($genres)) {
                 foreach ($genres as $genre) {
                     $movie->genres[] = $genre->name;
                 }
+            }
+            $fav = $wpdb->get_row("SELECT * FROM $wpdb->douban_faves WHERE `type` = '{$type}' AND `subject_id` = '{$movie->id}'");
+            if ($fav) {
+                $movie->fav_time = $fav->create_time;
+                $movie->score = $fav->score;
+                $movie->remark = $fav->remark;
             }
             return $movie;
         }

@@ -55,6 +55,15 @@
                     </td>
                 </tr>
                 <tr valign="top">
+                    <th scope="row"><label for="<?php echo db_setting_key('show_remark'); ?>">展示短评</label></th>
+                    <td>
+                        <label for="<?php echo db_setting_key('show_remark'); ?>">
+                            <input type="checkbox" name="<?php echo db_setting_key('show_remark'); ?>" id="show_remark" value="1" <?php if (db_get_setting("show_remark")) echo 'checked="checked"'; ?>>
+                        </label>
+                        <p class="description">开启后文章引入单条目时如果标记过则展示短评和标记时间</p>
+                    </td>
+                </tr>
+                <tr valign="top">
                     <th scope="row"><label for="<?php echo db_setting_key('download_image'); ?>">下载图片</label></th>
                     <td>
                         <label for="<?php echo db_setting_key('download_image'); ?>">
