@@ -4,6 +4,8 @@
 
 数据本地化，解决豆瓣接口失效及图片防盗链。
 
+last version v4.1.1
+
 ## 快速配置
 
 [帮助文档](https://fatesinger.com/101050)
