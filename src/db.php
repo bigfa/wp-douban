@@ -47,8 +47,8 @@ class db_sync extends WPD_Douban
                     $confition = false;
                 } else {
                     foreach ($data as $interest) {
-                        $movie = $wpdb->get_results("SELECT * FROM $wpdb->douban_movies WHERE `type` = '" . $type . "' AND douban_id = '{$interest['subject']['id']}'");
-                        if (empty($movie)) {
+                        $movie = $wpdb->get_row("SELECT * FROM $wpdb->douban_movies WHERE `type` = '{$type}' AND douban_id = {$interest['subject']['id']}");
+                        if (!$movie) {
                             $wpdb->insert(
                                 $wpdb->douban_movies,
                                 array(
@@ -88,9 +88,9 @@ class db_sync extends WPD_Douban
                                 );
                             }
                         } else {
-                            $movie_id = $movie[0]->id;
-                            $fav = $wpdb->get_results("SELECT * FROM $wpdb->douban_faves WHERE `type` = '" . $type . "'  AND subject_id = '{$movie_id}'");
-                            if (empty($fav)) {
+                            $movie_id = $movie->id;
+                            $fav = $wpdb->get_row("SELECT * FROM $wpdb->douban_faves WHERE `type` = '{$type}'  AND subject_id = {$movie_id}");
+                            if (!$fav) {
                                 $wpdb->insert(
                                     $wpdb->douban_faves,
                                     [

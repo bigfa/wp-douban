@@ -3,12 +3,12 @@
 Plugin Name: WP-Douban
 Plugin URI: https://fatesinger.com/101005
 Description: 🎬 📖 🎵 🎮 manage your movie / book / music / game records
-Version: 4.1.1
+Version: 4.1.2
 Author: Bigfa
 Author URI: https://fatesinger.com
 */
 
-define('WPD_VERSION', '4.1.1');
+define('WPD_VERSION', '4.1.2');
 define('WPD_URL', plugins_url('', __FILE__));
 define('WPD_PATH', dirname(__FILE__));
 define('WPD_ADMIN_URL', admin_url());

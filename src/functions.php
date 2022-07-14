@@ -5,7 +5,7 @@
  */
 class WPD_Douban
 {
-    const VERSION = '4.1.1';
+    const VERSION = '4.1.2';
     private $base_url = 'https://fatesinger.com/dbapi/';
 
     public function __construct()
@@ -165,14 +165,14 @@ class WPD_Douban
         return new WP_REST_Response($data);
     }
 
-    public function get_collection($data)
+    public function get_collection($douban_id)
     {
         global $wpdb;
-        $collections = $wpdb->get_results("SELECT * FROM $wpdb->douban_collection WHERE `douban_id` = '{$data}'");
-        if (empty($collections)) {
+        $collection = $wpdb->get_row("SELECT * FROM $wpdb->douban_collection WHERE `douban_id` = '{$douban_id}'");
+        if (!$collection) {
             return false;
         } else {
-            return $collections[0];
+            return $collection;
         }
     }
 
@@ -417,11 +417,11 @@ class WPD_Douban
         }
 
         foreach ($interests as $interest) {
-            $movie = $wpdb->get_results("SELECT * FROM wp_douban_movies WHERE `type` = '{$interest['type']}' AND douban_id = '{$interest['id']}'");
+            $movie = $wpdb->get_row("SELECT * FROM $wpdb->douban_movies WHERE `type` = '{$interest['type']}' AND douban_id = {$interest['id']}");
             $movie_id = '';
-            if (empty($movie)) {
+            if (!$movie) {
                 $wpdb->insert(
-                    'wp_douban_movies',
+                    $wpdb->douban_douban_movies,
                     array(
                         'name' => $interest['title'],
                         'poster' => $interest['pic']['large'],
@@ -436,15 +436,15 @@ class WPD_Douban
                 );
                 $movie_id = $wpdb->insert_id;
             } else {
-                $movie_id = $movie[0]->id;
+                $movie_id = $movie->id;
             }
 
-            $relation = $wpdb->get_results("SELECT * FROM $wpdb->douban_relation WHERE `movie_id` = '{$movie_id}' AND `collection_id` = {$collection_id})");
+            $relation = $wpdb->get_row("SELECT * FROM $wpdb->douban_relation WHERE `movie_id` = {$movie_id} AND `collection_id` = {$collection_id}");
 
-            if (empty($relation)) {
-                $wpdb->insert('wp_douban_relation', [
-                    'movie_id' => $movie_id,
-                    'collection_id' => $collection_id
+            if (!$relation) {
+                $wpdb->insert($wpdb->douban_relation, [
+                    'movie_id' => intval($movie_id),
+                    'collection_id' => intval($collection_id)
                 ]);
             }
         }
