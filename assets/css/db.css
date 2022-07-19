@@ -1,13 +1,19 @@
 :root {
     --db-main-color: rgba(0, 87, 217);
     --db-hover-color: rgba(104, 156, 233, 1);
+    --db--text-color: rgba(0, 0, 0, 0.8);
+    --db--text-color-light: rgba(0, 0, 0, 0.6);
+    --db--background-gray: #f2f4f6;
+    --db-border-color: rgba(0, 0, 0, 0.1);
 }
+
 .db--nav {
     padding: 30px 0 20px;
     display: flex;
     align-items: center;
     flex-wrap: wrap;
 }
+
 .db--navItem {
     font-size: 20px;
     cursor: pointer;
@@ -17,11 +23,14 @@
     align-items: center;
     text-transform: capitalize;
     margin-right: 20px;
+    color: var(--db--text-color);
 }
+
 .db--navItem.current,
 .db--navItem:hover {
     border-color: inherit;
 }
+
 .db--score svg {
     fill: #f5c518;
     margin-right: 5px;
@@ -44,13 +53,14 @@
     margin-top: 2px;
     font-size: 14px;
     line-height: 1.4;
+    color: var(--db--text-color);
 }
 .db--title a:hover {
     color: var(--db-hover-color);
     text-decoration: underline;
 }
 .db--genreItem {
-    background: #f2f4f6;
+    background: var(--db--background-gray);
     font-size: 12px;
     padding: 5px 12px;
     border-radius: 4px;
@@ -58,6 +68,7 @@
     margin-bottom: 10px;
     line-height: 1.4;
     cursor: pointer;
+    color: var(--db--text-color-light);
 }
 .db--genreItem.is-active {
     background-color: var(--db-main-color);
@@ -79,7 +90,7 @@
     display: flex;
     align-items: center;
     font-size: 14px;
-    color: rgba(0, 0, 0, 0.55);
+    color: var(--db--text-color-light);
 }
 .db--item {
     width: 150px;
@@ -149,7 +160,7 @@
 }
 .doulist-item {
     margin: 30px 0;
-    color: #666;
+    color: var(--db--text-color-light);
     border: 1px solid #eee;
     border-radius: 4px;
 }
@@ -275,9 +286,9 @@
     display: flex;
     align-items: center;
     padding: 15px 0;
-    border-bottom: 1px dotted #eee;
+    border-bottom: 1px dotted var(--db-border-color);
     font-size: 14px;
-    color: rgba(0, 0, 0, 0.55);
+    color: var(--db--text-color-light);
 }
 .db--card__list:last-child {
     border-bottom: 0;
@@ -356,21 +367,23 @@
     margin-right: 15px;
     align-items: center;
     width: 60px;
+    color: var(--db--text-color);
 }
 
 .db--titleDate__day {
     font-weight: 900;
     font-size: 44px;
+    color: var(--db--text-color);
 }
 .db--titleDate__month {
     font-size: 14px;
-    color: rgba(0, 0, 0, 0.6);
+    color: var(--db--text-color-light);
     font-weight: 900;
 }
 
 .db--titleDate__year {
     font-size: 12px;
-    color: rgba(0, 0, 0, 0.6);
+    color: var(--db--text-color-light);
 }
 
 .lds-ripple {
@@ -420,5 +433,5 @@
     font-size: 12px;
     text-align: right;
     margin-top: 20px;
-    color: rgba(0, 0, 0, 0.6);
+    color: var(--db--text-color-light);
 }

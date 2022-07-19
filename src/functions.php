@@ -5,7 +5,7 @@
  */
 class WPD_Douban
 {
-    const VERSION = '4.1.2';
+    const VERSION = '4.1.3';
     private $base_url = 'https://fatesinger.com/dbapi/';
 
     public function __construct()
@@ -390,6 +390,24 @@ class WPD_Douban
     public function wpd_load_scripts()
     {
         wp_enqueue_style('wpd-css', WPD_URL . "/assets/css/db.min.css", array(), WPD_VERSION, 'screen');
+        $dark = $this->db_get_setting('dark_mode') == 'auto'  ? "@media (prefers-color-scheme: dark) {
+            :root {
+            --db-main-color: rgba(0, 87, 217);
+            --db-hover-color: rgba(255, 255, 255, 0.5);
+            --db--text-color: rgba(255, 255, 255, 0.8);
+            --db--text-color-light: rgba(255, 255, 255, 0.6);
+            --db--background-gray: #3c3c3c;
+            --db-border-color: rgba(255, 255, 255, 0.1);
+        }
+    }" : ":root {
+        --db-main-color: rgba(0, 87, 217);
+        --db-hover-color: rgba(255, 255, 255, 0.5);
+        --db--text-color: rgba(255, 255, 255, 0.8);
+        --db--text-color-light: rgba(255, 255, 255, 0.6);
+        --db--background-gray: #3c3c3c;
+        --db-border-color: rgba(255, 255, 255, 0.1);
+    }";
+        if ($this->db_get_setting('dark_mode') == 'auto' || $this->db_get_setting('dark_mode') == 'dark') wp_add_inline_style('wpd-css', $dark);
         wp_enqueue_script('wpdjs', WPD_URL . "/assets/js/db.min.js", array(), WPD_VERSION, true);
         wp_localize_script('wpdjs', 'wpd_base', array(
             'api' => get_rest_url(),

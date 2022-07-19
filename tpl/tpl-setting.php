@@ -48,6 +48,18 @@
                     </td>
                 </tr>
                 <tr valign="top">
+                    <th scope="row"><label for="<?php echo db_setting_key('dark_mode');
+                                                $mode = db_get_setting("dark_mode") ? db_get_setting("dark_mode") : 'light'; ?>">暗黑模式</label></th>
+                    <td>
+                        <label for="mode-light">
+                            <input type="radio" name="<?php echo db_setting_key('dark_mode'); ?>" id="mode-light" value="light" <?php if ($mode == 'light') echo 'checked="checked"'; ?>>浅色模式</label>
+                        <label for="mode-dark">
+                            <input type="radio" name="<?php echo db_setting_key('dark_mode'); ?>" id="mode-dark" value="dark" <?php if ($mode == 'dark') echo 'checked="checked"'; ?>>深色模式</label>
+                        <label for="mode-auto">
+                            <input type="radio" name="<?php echo db_setting_key('dark_mode'); ?>" id="mode-auto" value="auto" <?php if ($mode == 'auto') echo 'checked="checked"'; ?>>跟随系统</label>
+                    </td>
+                </tr>
+                <tr valign="top">
                     <th scope="row"><label for="url">自定义CSS</label></th>
                     <td>
                         <textarea name="<?php echo db_setting_key('css'); ?>" class="wpd-textarea"><?php echo db_get_setting('css'); ?></textarea>
