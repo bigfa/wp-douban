@@ -54,6 +54,16 @@ class WPD_ADMIN extends WPD_Douban
         }
 
 
+
+
+        if (isset($_GET['wpd_action']) && 'empty_log' === $_GET['wpd_action']) {
+            global $wpdb;
+            $wpdb->query("TRUNCATE TABLE $wpdb->douban_log");
+            wp_redirect($sendback);
+            exit;
+        }
+
+
         if (isset($_POST['wpd_action']) && 'edit_fave' === $_POST['wpd_action']) {
             global $wpdb;
             $wpdb->update(
