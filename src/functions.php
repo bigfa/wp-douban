@@ -5,7 +5,7 @@
  */
 class WPD_Douban
 {
-    const VERSION = '4.2.0';
+    const VERSION = '4.2.1';
     private $base_url = 'https://fatesinger.com/dbapi/';
 
     public function __construct()
