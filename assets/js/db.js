@@ -3,6 +3,7 @@ class WP_DOUBAN {
     constructor() {
         this.ver = "1.0.4";
         this.type = "movie";
+        this.status = "done";
         this.finished = false;
         this.paged = 1;
         this.genre_list = [];
@@ -50,9 +51,31 @@ class WP_DOUBAN {
         return true;
     }
 
+    _statusChange() {
+        this.on("click", ".db--typeItem", (t) => {
+            const self = t.currentTarget;
+            if (self.classList.contains("is-active")) {
+                // const index = this.genre.indexOf(self.innerText);
+                return;
+            }
+            document.querySelector(".db--list").innerHTML = "";
+            document.querySelector(".lds-ripple").classList.remove("u-hide");
+            document
+                .querySelector(".db--typeItem.is-active")
+                .classList.remove("is-active");
+            self.classList.add("is-active");
+            this.status = self.dataset.status;
+            this.paged = 1;
+            this.finished = false;
+            this.subjects = [];
+            this._fetchData();
+            return;
+        });
+    }
+
     _handleGenreClick() {
         this.on("click", ".db--genreItem", (t) => {
-            const self = t.target;
+            const self = t.currentTarget;
             if (self.classList.contains("is-active")) {
                 const index = this.genre.indexOf(self.innerText);
                 self.classList.remove("is-active");
@@ -97,6 +120,7 @@ class WP_DOUBAN {
                 type: this.type,
                 paged: this.paged,
                 genre: JSON.stringify(this.genre),
+                status: this.status,
             })
         )
             .then((response) => response.json())
@@ -119,6 +143,11 @@ class WP_DOUBAN {
                         .querySelector(".lds-ripple")
                         .classList.add("u-hide");
                 } else {
+                    document
+                        .querySelector(".db--list")
+                        .classList.contains("db--list__card")
+                        ? this._randerDateTemplate()
+                        : this._randerListTemplate();
                     this.finished = true;
                     document
                         .querySelector(".lds-ripple")
@@ -128,6 +157,10 @@ class WP_DOUBAN {
     }
 
     _randerDateTemplate() {
+        if (!this.subjects.length)
+            return (document.querySelector(
+                ".db--list"
+            ).innerHTML = `<div class="db--empty"></div>`);
         const result = this.subjects.reduce((result, item) => {
             const date = new Date(item.create_time);
             const year = date.getFullYear();
@@ -172,6 +205,10 @@ class WP_DOUBAN {
     }
 
     _randerListTemplate() {
+        if (!this.subjects.length)
+            return (document.querySelector(
+                ".db--list"
+            ).innerHTML = `<div class="db--empty"></div>`);
         document.querySelector(".db--list").innerHTML = this.subjects
             .map((item) => {
                 return `<div class="db--item">${
@@ -240,6 +277,7 @@ class WP_DOUBAN {
             const self = t.target;
             self.classList.add("current");
             this.paged = 1;
+            //this.status = "done";
             this.finished = false;
             this.subjects = [];
             this._fetchData();
@@ -264,6 +302,7 @@ class WP_DOUBAN {
             this._fetchData();
             this._handleScroll();
             this._handleNavClick();
+            this._statusChange();
         }
 
         if (document.querySelector(".db--collection")) {
@@ -284,6 +323,7 @@ class WP_DOUBAN {
                 paged: 1,
                 start_time: item.dataset.start,
                 end_time: item.dataset.end,
+                status: item.dataset.status,
             })
         )
             .then((response) => response.json())

@@ -64,7 +64,8 @@ class Subject_List_Table extends \WP_List_Table
 
         $filter = !empty($_GET['subject_type']) && $_GET['subject_type'] != 'all' ? " AND f.type = '{$_GET['subject_type']}'" : '';
         $filter .= !empty($_GET['s']) ? " AND m.name LIKE '%{$_GET['s']}%'" : '';
-        $subjects = $wpdb->get_results("SELECT m.*, f.create_time, f.remark, f.score FROM $wpdb->douban_movies m LEFT JOIN $wpdb->douban_faves f ON m.id = f.subject_id WHERE f.status = 'done'{$filter} ORDER BY f.create_time DESC LIMIT 40 OFFSET {$offset}");
+        $filter .= !empty($_GET['status']) ? " f.status = '{$_GET['status']}'" : "";
+        $subjects = $wpdb->get_results("SELECT m.*, f.create_time, f.remark, f.score , f.status FROM $wpdb->douban_movies m LEFT JOIN $wpdb->douban_faves f ON m.id = f.subject_id WHERE 1=1{$filter} ORDER BY f.create_time DESC LIMIT 40 OFFSET {$offset}");
 
         $this->items = $subjects;
 
@@ -157,6 +158,18 @@ class Subject_List_Table extends \WP_List_Table
     public function column_default($item, $column_name)
     {
         switch ($column_name) {
+            case 'status':
+                if ($item->status == 'done') {
+                    return '已看';
+                } else if ($item->status == 'mark') {
+                    return '想看';
+                } else if ($item->status == 'doing') {
+                    return '在看';
+                }
+
+            case 'poster':
+                return '<img src="' . $item->poster . '" width="100" referrerpolicy="no-referrer">';
+
             case 'name':
             case 'douban_score':
             case 'card_subtitle':
@@ -164,10 +177,6 @@ class Subject_List_Table extends \WP_List_Table
             case 'create_time':
             case 'score':
                 return $item->$column_name;
-
-            case 'poster':
-                return '<img src="' . $item->poster . '" width="100" referrerpolicy="no-referrer">';
-
             default:
                 return print_r($item, true);
         }
@@ -231,6 +240,7 @@ class Subject_List_Table extends \WP_List_Table
             'douban_score' => '豆瓣评分',
             'card_subtitle' => '描述',
             'create_time' => '时间',
+            'status' => '状态',
             'remark' => '我的短评',
             'score' => '我的评分'
         );

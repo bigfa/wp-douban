@@ -5,7 +5,7 @@
  */
 class WPD_Douban
 {
-    const VERSION = '4.2.1';
+    const VERSION = '4.3.0';
     private $base_url = 'https://fatesinger.com/dbapi/';
 
     public function __construct()
@@ -65,11 +65,12 @@ class WPD_Douban
                 'type' => '',
                 'start' => '',
                 'end' => '',
+                'status' => '',
                 'style' => ''
             ),
             $atts
         ));
-        return $this->render_collection($type, $start, $end, $style);
+        return $this->render_collection($type, $start, $end, $status, $style);
     }
 
     function plugin_action_links($actions, $plugin_file, $plugin_data, $context)
@@ -105,9 +106,9 @@ class WPD_Douban
         }
     }
 
-    public function render_collection($type, $start, $end, $style)
+    public function render_collection($type, $start, $end, $status, $style)
     {
-        return '<div class="db--collection" data-type="' . $type . '" data-start="' . $start . '" data-end="' . $end . '" ' . ($style ? 'data-style="' . $style . '"' : '') . '></div>
+        return '<div class="db--collection" data-status="' . $status . '" data-type="' . $type . '" data-start="' . $start . '" data-end="' . $end . '" ' . ($style ? 'data-style="' . $style . '"' : '') . '></div>
         ';
     }
 
@@ -126,10 +127,16 @@ class WPD_Douban
             $nav = '';
         }
         $only = count($include_types) == 1 ? " data-type='{$include_types[0]}'" : '';
+        $show_type = db_get_setting("show_type") ? '<div class="db--type">
+        <div class="db--typeItem" data-status="mark">想看</div>
+        <div class="db--typeItem" data-status="doing">在看</div>
+        <div class="db--typeItem is-active" data-status="done">看过</div>
+    </div>' : '';
         return '<section class="db--container"><nav class="db--nav">' . $nav . '
     </nav>
     <div class="db--genres u-hide">
     </div>
+    ' . $show_type . '
     <div class="db--list' . ($style ? ' db--list__' . $style  : '') . '"' . $only . '>
     </div>
     <div class="block-more block-more__centered">
@@ -181,14 +188,16 @@ class WPD_Douban
         global $wpdb;
         $offset = $data['paged'] ? ($data['paged'] - 1) * $this->perpage : 0;
         $type = $data['type'] ? $data['type'] : 'movie';
+        $status = $data['status'] ? $data['status'] : 'done';
         $genre = $data['genre'] ? implode("','", json_decode($data['genre'], true)) : '';
-        $filterTime = ($data['start_time'] && $data['end_time']) ? " AND f.create_time BETWEEN '{$data['start_time']}' AND '{$data['end_time']}'" : '';
+        $endtime = $data['endtime'] ? $data['endtime'] : date('Y-m-d');
+        $filterTime = ($data['start_time']) ? " AND f.create_time BETWEEN '{$data['start_time']}' AND '{$endtime}'" : '';
         $top250 = $type == 'book' ? $this->get_collection('book_top250') : $this->get_collection('movie_top250');
 
         if ($genre) {
-            $goods = $wpdb->get_results("SELECT m.*, f.create_time , f.remark FROM ( $wpdb->douban_movies m LEFT JOIN $wpdb->douban_genres g ON m.id = g.movie_id ) LEFT JOIN $wpdb->douban_faves f ON m.id = f.subject_id WHERE f.type = '{$type}' AND f.status = 'done' AND g.name IN ('{$genre}') GROUP BY m.id ORDER BY f.create_time DESC LIMIT {$this->perpage} OFFSET {$offset}");
+            $goods = $wpdb->get_results("SELECT m.*, f.create_time , f.remark , f.status FROM ( $wpdb->douban_movies m LEFT JOIN $wpdb->douban_genres g ON m.id = g.movie_id ) LEFT JOIN $wpdb->douban_faves f ON m.id = f.subject_id WHERE f.type = '{$type}' AND f.status = '{$status}' AND g.name IN ('{$genre}') GROUP BY m.id ORDER BY f.create_time DESC LIMIT {$this->perpage} OFFSET {$offset}");
         } else {
-            $goods = $wpdb->get_results("SELECT m.*, f.create_time, f.remark FROM $wpdb->douban_movies m LEFT JOIN $wpdb->douban_faves f ON m.id = f.subject_id WHERE f.type = '{$type}' AND f.status = 'done' {$filterTime} ORDER BY f.create_time DESC LIMIT {$this->perpage} OFFSET {$offset}");
+            $goods = $wpdb->get_results("SELECT m.*, f.create_time, f.remark, f.status FROM $wpdb->douban_movies m LEFT JOIN $wpdb->douban_faves f ON m.id = f.subject_id WHERE f.type = '{$type}' AND f.status = '{$status}' {$filterTime} ORDER BY f.create_time DESC LIMIT {$this->perpage} OFFSET {$offset}");
         }
 
         $data = [];
@@ -389,7 +398,7 @@ class WPD_Douban
 
     public function wpd_load_scripts()
     {
-        wp_enqueue_style('wpd-css', WPD_URL . "/assets/css/db.min.css", array(), WPD_VERSION, 'screen');
+        wp_enqueue_style('wpd-css', WPD_URL . "/assets/css/db.min.css", [], WPD_VERSION, 'screen');
         $dark = $this->db_get_setting('dark_mode') == 'auto'  ? "@media (prefers-color-scheme: dark) {
             :root {
             --db-main-color: rgba(0, 87, 217);
@@ -408,11 +417,11 @@ class WPD_Douban
         --db-border-color: rgba(255, 255, 255, 0.1);
     }";
         if ($this->db_get_setting('dark_mode') == 'auto' || $this->db_get_setting('dark_mode') == 'dark') wp_add_inline_style('wpd-css', $dark);
-        wp_enqueue_script('wpdjs', WPD_URL . "/assets/js/db.min.js", array(), WPD_VERSION, true);
-        wp_localize_script('wpdjs', 'wpd_base', array(
+        wp_enqueue_script('wpdjs', WPD_URL . "/assets/js/db.min.js", [], WPD_VERSION, true);
+        wp_localize_script('wpdjs', 'wpd_base', [
             'api' => get_rest_url(),
             'token' => $this->db_get_setting('token'),
-        ));
+        ]);
     }
 
     public function get_collections($name = 'movie_top250')

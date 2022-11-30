@@ -66,17 +66,28 @@ class WPD_ADMIN extends WPD_Douban
 
         if (isset($_POST['wpd_action']) && 'edit_fave' === $_POST['wpd_action']) {
             global $wpdb;
-            $wpdb->update(
-                $wpdb->douban_faves,
-                [
-                    'remark' => $_POST['remark'],
-                    'score' => $_POST['score'],
-                    'create_time' => $_POST['create_time'],
-                ],
-                [
-                    'id' => $_POST['fave_id'],
-                ]
-            );
+            if (isset($_POST['status']) && $_POST['status']) {
+                $wpdb->update(
+                    $wpdb->douban_faves,
+                    [
+                        'remark' => $_POST['remark'],
+                        'score' => $_POST['score'],
+                        'create_time' => $_POST['create_time'],
+                        'status' => $_POST['status'],
+                    ],
+                    [
+                        'id' => $_POST['fave_id'],
+                    ]
+                );
+            } else {
+                $wpdb->delete(
+                    $wpdb->douban_faves,
+                    [
+                        'subject_id' => $_GET['subject_id'],
+                        'type' => $_GET['subject_type'],
+                    ]
+                );
+            }
             $link = array(
                 'page'                  => 'subject',
             );

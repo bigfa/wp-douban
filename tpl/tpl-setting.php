@@ -76,6 +76,15 @@
                     </td>
                 </tr>
                 <tr valign="top">
+                    <th scope="row"><label for="<?php echo db_setting_key('show_type'); ?>">开启分类</label></th>
+                    <td>
+                        <label for="<?php echo db_setting_key('show_type'); ?>">
+                            <input type="checkbox" name="<?php echo db_setting_key('show_type'); ?>" id="show_remark" value="1" <?php if (db_get_setting("show_type")) echo 'checked="checked"'; ?>>
+                        </label>
+                        <p class="description">默认只展示看过的条目，开启后会展示想看/在看/看过</p>
+                    </td>
+                </tr>
+                <tr valign="top">
                     <th scope="row"><label for="<?php echo db_setting_key('download_image'); ?>">下载图片</label></th>
                     <td>
                         <label for="<?php echo db_setting_key('download_image'); ?>">

@@ -435,3 +435,38 @@
     margin-top: 20px;
     color: var(--db--text-color-light);
 }
+
+.db--type {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.db--typeItem {
+    margin-right: 10px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    border: 1px solid var(--db-border-color);
+    border-radius: 999rem;
+    border-radius: 999rem;
+    padding: 1px 25px;
+    color: var(--db--text-color-light);
+}
+
+.db--typeItem.is-active {
+    color: var(--db-hover-color);
+    border-color: var(--db-hover-color);
+    cursor: not-allowed;
+}
+
+.db--empty {
+    background-image: url(../img/error.png);
+    background-repeat: no-repeat;
+    height: 300px;
+    width: 100%;
+    background-size: 96px;
+    background-position: center;
+    margin-bottom: 50px;
+}

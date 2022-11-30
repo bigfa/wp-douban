@@ -50,6 +50,17 @@
                         </td>
                     </tr>
                     <tr valign="top">
+                        <th scope="row"><label for="status">状态</label></th>
+                        <td>
+                            <select name="status" id="status">
+                                <option <?php if ($fave->status == 'done') echo 'selected="selected" '; ?>value="done">已看</option>
+                                <option <?php if ($fave->status == 'doing') echo 'selected="doing" '; ?>value="doing">在看</option>
+                                <option <?php if ($fave->status == 'mark') echo 'selected="mark" '; ?>value="mark">想看</option>
+                                <option <?php if ($fave->status == '') echo 'selected="selected" '; ?>value="">取消标记</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr valign="top">
                         <th scope="row"><label for="url">短评</label></th>
                         <td>
                             <textarea name="remark" style="width: 600px;" rows="5" cols="30" placeholder="输入短评"><?php echo $fave->remark ?></textarea>
@@ -58,7 +69,7 @@
                     <tr valign="top">
                         <th scope="row"><label for="url">评分</label></th>
                         <td>
-                            <input name="score" type="number" value="<?php echo $fave->score ? $fave->score : '' ?>" min="0" max="5"></input>
+                            <input name="score" type="number" value="<?php echo $fave->score ? $fave->score : '' ?>" min="0" max="10"></input>
                         </td>
                     </tr>
                 <?php endif; ?>
