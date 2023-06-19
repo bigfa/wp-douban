@@ -7,6 +7,8 @@ class WPD_Douban
 {
     const VERSION = '4.3.0';
     private $base_url = 'https://fatesinger.com/dbapi/';
+    private $perpage = 70;
+    private $uid;
 
     public function __construct()
     {
@@ -190,7 +192,7 @@ class WPD_Douban
         $type = $data['type'] ? $data['type'] : 'movie';
         $status = $data['status'] ? $data['status'] : 'done';
         $genre = $data['genre'] ? implode("','", json_decode($data['genre'], true)) : '';
-        $endtime = $data['endtime'] ? $data['endtime'] : date('Y-m-d');
+        $endtime = $data['end_time'] ? $data['end_time'] : date('Y-m-d');
         $filterTime = ($data['start_time']) ? " AND f.create_time BETWEEN '{$data['start_time']}' AND '{$endtime}'" : '';
         $top250 = $type == 'book' ? $this->get_collection('book_top250') : $this->get_collection('movie_top250');
 

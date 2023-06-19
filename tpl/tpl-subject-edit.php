@@ -2,8 +2,8 @@
     <h2>编辑条目</h2>
     <?php $subject_id = $_GET['subject_id'];
     global $wpdb;
-    $subject = $wpdb->get_row("SELECT * FROM $wpdb->douban_movies WHERE id = '{$subject_id}'");
-    $fave = $wpdb->get_row("SELECT * FROM $wpdb->douban_faves WHERE subject_id = '{$subject_id}'");
+    $subject = $subject_id ? $wpdb->get_row("SELECT * FROM $wpdb->douban_movies WHERE id = '{$subject_id}'") : "";
+    $fave = $subject_id ? $wpdb->get_row("SELECT * FROM $wpdb->douban_faves WHERE subject_id = '{$subject_id}'") : "";
     $action = $_GET['action'] ? $_GET['action'] : 'edit_fave';
     ?>
     <form method="post">

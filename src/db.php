@@ -4,6 +4,7 @@ class db_sync extends WPD_Douban
 {
 
     private $base_url = 'https://fatesinger.com/dbapi/';
+    private $uid;
 
     public function __construct()
     {
