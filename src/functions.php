@@ -326,6 +326,10 @@ class WPD_Douban
                 $movie->fav_time = $fav->create_time;
                 $movie->score = $fav->score;
                 $movie->remark = $fav->remark;
+            } else {
+                $movie->fav_time = "";
+                $movie->score = "";
+                $movie->remark = "";
             }
             return $movie;
         }
@@ -383,7 +387,10 @@ class WPD_Douban
                 'type' => $type,
                 'pubdate' => $data['pubdate'] ? $data['pubdate'][0] : '',
                 'card_subtitle' => $data['card_subtitle'],
-                'genres' => $data['genres']
+                'genres' => $data['genres'],
+                'fav_time' => '',
+                'remark' => '',
+                'score' => ''
             ];
         } else {
             return false;
