@@ -5,7 +5,7 @@
  */
 class WPD_Douban
 {
-    const VERSION = '4.3.0';
+    const VERSION = '4.3.3';
     private $base_url = 'https://fatesinger.com/dbapi/';
     private $perpage = 70;
     private $uid;
@@ -400,7 +400,17 @@ class WPD_Douban
     private function wpd_save_images($id, $url)
     {
         $e = ABSPATH . 'douban_cache/' . $id . '.jpg';
-        if (!is_file($e)) copy(htmlspecialchars_decode($url), $e);
+        if (!is_file($e)) {
+
+            $referer = 'https://m.douban.com';
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_REFERER, $referer); // 设置Referer头信息
+            curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (iPhone; CPU iPhone OS 12_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/12.0 Mobile/15A372 Safari/604.1');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $imageData = curl_exec($ch);
+            curl_close($ch);
+            file_put_contents($e, $imageData);
+        }
         $url = home_url('/') . 'douban_cache/' . $id . '.jpg';
         return $url;
     }
