@@ -3,12 +3,12 @@
 Plugin Name: WP-Douban
 Plugin URI: https://fatesinger.com/101005
 Description: 🎬 📖 🎵 🎮 manage your movie / book / music / game records
-Version: 4.3.3
+Version: 4.4.0
 Author: Bigfa
 Author URI: https://fatesinger.com
 */
 
-define('WPD_VERSION', '4.3.3');
+define('WPD_VERSION', '4.4.0');
 define('WPD_URL', plugins_url('', __FILE__));
 define('WPD_PATH', dirname(__FILE__));
 define('WPD_ADMIN_URL', admin_url());
@@ -76,6 +76,7 @@ function wpd_install()
     global $wpdb;
     $charset_collate = $wpdb->get_charset_collate();
     $create_table = [];
+    $update_table = [];
     $create_table['douban_collection'] = "CREATE TABLE $wpdb->douban_collection (" .
         "id int(10) NOT NULL auto_increment," .
         "name varchar(256) default ''," .
@@ -108,14 +109,16 @@ function wpd_install()
         "name varchar(256)," .
         "poster varchar(512)," .
         "link varchar(256)," .
-        "`delete` int," .
-        "`douban_id` int," .
+        //   "`delete` int," .
+        "douban_id int," .
         "douban_score varchar(16)," .
-        "`year` varchar(16)," .
-        "`type` varchar(16) default 'movie'," .
+        "year varchar(16)," .
+        "type varchar(16)," .
         "pubdate varchar(32)," .
         "faves int," .
         "card_subtitle varchar(256)," .
+        "tmdb_id int," .
+        "tmdb_type varchar(16)," .
         "PRIMARY KEY (id)" .
         ") $charset_collate;";
 
@@ -139,12 +142,18 @@ function wpd_install()
         "PRIMARY KEY (id)" .
         ") $charset_collate;";
 
-    if ($wpdb->get_var("SHOW TABLES LIKE $wpdb->douban_collection") != $wpdb->douban_collection) dbDelta($create_table['douban_collection']);
-    if ($wpdb->get_var("SHOW TABLES LIKE $wpdb->douban_collection") != $wpdb->douban_collection) dbDelta($create_table['douban_faves']);
-    if ($wpdb->get_var("SHOW TABLES LIKE $wpdb->douban_genres") != $wpdb->douban_genres) dbDelta($create_table['douban_genres']);
-    if ($wpdb->get_var("SHOW TABLES LIKE $wpdb->douban_movies") != $wpdb->douban_movies) dbDelta($create_table['douban_movies']);
-    if ($wpdb->get_var("SHOW TABLES LIKE $wpdb->douban_relation") != $wpdb->douban_relation) dbDelta($create_table['douban_relation']);
-    if ($wpdb->get_var("SHOW TABLES LIKE $wpdb->douban_log") != $wpdb->douban_log) dbDelta($create_table['douban_log']);
+    $update_table['douban_movies'] = "ALTER TABLE {$wpdb->douban_movies} ADD COLUMN `tmdb_id` int(10) AFTER `douban_id`, ADD COLUMN `tmdb_type` varchar(16) AFTER `tmdb_id`;";
+
+    if ($wpdb->get_var("SHOW TABLES LIKE '{$wpdb->douban_collection}'") != $wpdb->douban_collection) dbDelta($create_table['douban_collection']);
+    if ($wpdb->get_var("SHOW TABLES LIKE '{$wpdb->douban_faves}'") != $wpdb->douban_faves) dbDelta($create_table['douban_faves']);
+    if ($wpdb->get_var("SHOW TABLES LIKE '{$wpdb->douban_genres}'") != $wpdb->douban_genres) dbDelta($create_table['douban_genres']);
+    if ($wpdb->get_var("SHOW TABLES LIKE '{$wpdb->douban_relation}'") != $wpdb->douban_relation) dbDelta($create_table['douban_relation']);
+    if ($wpdb->get_var("SHOW TABLES LIKE '{$wpdb->douban_log}'") != $wpdb->douban_log) dbDelta($create_table['douban_log']);
+    if ($wpdb->get_var("SHOW TABLES LIKE '{$wpdb->douban_movies}'") != $wpdb->douban_movies) {
+        dbDelta($create_table['douban_movies']);
+    } elseif (!$wpdb->get_results("SHOW COLUMNS FROM {$wpdb->douban_movies} LIKE 'tmdb_id'")) { // update database movie table since 4.4.0
+        $wpdb->query($update_table['douban_movies']);
+    }
 }
 
 /**

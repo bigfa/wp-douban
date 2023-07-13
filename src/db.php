@@ -18,7 +18,6 @@ class db_sync extends WPD_Douban
         $response = wp_remote_get($url);
         $data = json_decode(wp_remote_retrieve_body($response), true);
         $interests = $data['interests'];
-
         return $interests;
     }
 

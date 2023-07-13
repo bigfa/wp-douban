@@ -1,7 +1,7 @@
 // @ts-nocheck
 class WP_DOUBAN {
     constructor() {
-        this.ver = "1.0.4";
+        this.ver = "1.0.5";
         this.type = "movie";
         this.status = "done";
         this.finished = false;
@@ -185,7 +185,7 @@ class WP_DOUBAN {
                             : ""
                     }<img src="${
                         movie.poster
-                    }" referrerpolicy="no-referrer" class="db--image"><div class="db--score JiEun">${
+                    }" referrerpolicy="unsafe-url" class="db--image"><div class="db--score JiEun">${
                         movie.douban_score > 0
                             ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" ><path d="M12 20.1l5.82 3.682c1.066.675 2.37-.322 2.09-1.584l-1.543-6.926 5.146-4.667c.94-.85.435-2.465-.799-2.567l-6.773-.602L13.29.89a1.38 1.38 0 0 0-2.581 0l-2.65 6.53-6.774.602C.052 8.126-.453 9.74.486 10.59l5.147 4.666-1.542 6.926c-.28 1.262 1.023 2.26 2.09 1.585L12 20.099z"></path></svg>' +
                               movie.douban_score
@@ -215,7 +215,7 @@ class WP_DOUBAN {
                     item.is_top250 ? '<span class="top250">Top 250</span>' : ""
                 }<img src="${
                     item.poster
-                }" referrerpolicy="no-referrer" class="db--image"><div class="ipc-signpost JiEun">${
+                }" referrerpolicy="unsafe-url" class="db--image"><div class="ipc-signpost JiEun">${
                     item.create_time
                 }</div><div class="db--score JiEun">${
                     item.douban_score > 0
@@ -339,7 +339,7 @@ class WP_DOUBAN {
                             <div class="db--viewTime JiEun">Marked ${
                                 movie.create_time
                             }</div>
-                            <div class="doulist-post"><img referrerpolicy="no-referrer" src="${
+                            <div class="doulist-post"><img referrerpolicy="unsafe-url" src="${
                                 movie.poster
                             }"></div><div class="doulist-content"><div class="doulist-title"><a href="${
                                     movie.link
@@ -372,7 +372,7 @@ class WP_DOUBAN {
                             html += result[key]
                                 .map((movie) => {
                                     return `<div class="db--card__list"">
-                                    <img referrerpolicy="no-referrer" src="${
+                                    <img referrerpolicy="unsafe-url" src="${
                                         movie.poster
                                     }">
                                     <div>

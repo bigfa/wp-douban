@@ -12,8 +12,15 @@
                 <tr valign="top">
                     <th scope="row"><label for="url">条目</label></th>
                     <td>
-                        <p><img src="<?php echo $subject->poster; ?>" width="100" /></p>
-                        <p><?php echo $subject->name; ?></p>
+                        <p><img src="<?php
+                                        $type = $subject->tmdb_id ? 'tmdb' : '';
+                                        $id = $subject->tmdb_id ? $subject->tmdb_id : $subject->douban_id;
+                                        $e = ABSPATH . 'douban_cache/' . $type . $id . '.jpg';
+                                        echo (is_file($e) ? home_url('/') . 'douban_cache/' . $type . $id . '.jpg' : $subject->poster); ?>" width="100" /></p>
+                        <p><?php echo (is_file($e) ? '封面已缓存' : '因豆瓣原因，原始封面可能无法显示。'); ?></p>
+                        <p><?php echo $subject->name; ?>
+                            <span class="db--titletag"><?php echo ($subject->tmdb_id ? 'TMDB' : '豆瓣'); ?></span>
+                        </p>
                         <p><?php echo $subject->card_subtitle; ?></p>
                     </td>
                 </tr>
@@ -82,5 +89,17 @@
         <div class="nm-submit-form">
             <input type="submit" class="button-primary" name="save" value="<?php _e('Save Changes') ?>" />
         </div>
+        <style>
+            .db--titletag {
+                font-size: 12px;
+                display: inline-block;
+                color: #fff;
+                background-color: green;
+                border-radius: 2px;
+                line-height: 1;
+                padding: 2px 3px;
+                margin-left: 4px;
+            }
+        </style>
     </form>
 </div>

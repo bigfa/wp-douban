@@ -54,8 +54,6 @@ class WPD_ADMIN extends WPD_Douban
         }
 
 
-
-
         if (isset($_GET['wpd_action']) && 'empty_log' === $_GET['wpd_action']) {
             global $wpdb;
             $wpdb->query("TRUNCATE TABLE $wpdb->douban_log");
@@ -113,7 +111,7 @@ class WPD_ADMIN extends WPD_Douban
                 ]
             );
             $link = array(
-                'page'                  => 'subject_all',
+                'page' => 'subject_all',
             );
             $link = add_query_arg($link, admin_url('admin.php'));
             wp_redirect($link);

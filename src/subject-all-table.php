@@ -154,6 +154,24 @@ class Subject_ALL_Table extends \WP_List_Table
     //     return [];
     // }
 
+    private function wpd_save_images($id, $url, $type = "")
+    {
+        $e = ABSPATH . 'douban_cache/' . $type . $id . '.jpg';
+        if (!is_file($e)) {
+
+            $referer = 'https://m.douban.com';
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_REFERER, $referer); // 设置Referer头信息
+            curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (iPhone; CPU iPhone OS 12_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/12.0 Mobile/15A372 Safari/604.1');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $imageData = curl_exec($ch);
+            curl_close($ch);
+            file_put_contents($e, $imageData);
+        }
+        $url = home_url('/') . 'douban_cache/' . $type . $id . '.jpg';
+        return $url;
+    }
+
     public function column_default($item, $column_name)
     {
         switch ($column_name) {
@@ -166,7 +184,10 @@ class Subject_ALL_Table extends \WP_List_Table
                 return $item->$column_name;
 
             case 'poster':
-                return '<img src="' . $item->poster . '" width="100" referrerpolicy="no-referrer">';
+                return '<img src="' . $this->wpd_save_images($item->douban_id, $item->poster, $item->tmdb_type ? 'tmdb' : '') . '" width="100" referrerpolicy="no-referrer">';
+
+            case 'tmdb_type':
+                return $item->$column_name ? 'TMDB' : '豆瓣';
 
             default:
                 return print_r($item, true);
@@ -251,6 +272,7 @@ class Subject_ALL_Table extends \WP_List_Table
             'poster' => '封面',
             'douban_score' => '豆瓣评分',
             'card_subtitle' => '描述',
+            'tmdb_type' => '来源'
         );
     }
 }

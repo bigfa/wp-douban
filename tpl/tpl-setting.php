@@ -27,11 +27,11 @@
                                     'key' => 'perpage',
                                     'default' => '70'
                                 ),
-                                // array(
-                                //     'title' => '云token',
-                                //     'key' => 'token',
-                                //     'default' => ''
-                                // )
+                                array(
+                                    'title' => 'TMDB API Key',
+                                    'key' => 'api_key',
+                                    'default' => ''
+                                )
                             );
                             foreach ($color as $key => $V) {
                             ?>
@@ -44,12 +44,14 @@
                             ?>
                         </ul>
                         <p class="description">点击你的个人主页，URL类似为<code>https://www.douban.com/people/54529369/</code>，<code>54529369</code>就是你的ID</p>
-                        <!-- <p class="description">设置<code>token</code>后将从云端获取数据，无token 请勿设置</p> -->
+                        <p class="description">设置<code>TMDB API Key</code>在https://www.themoviedb.org/settings/api 自行申请</p>
                     </td>
                 </tr>
                 <tr valign="top">
-                    <th scope="row"><label for="<?php echo db_setting_key('dark_mode');
-                                                $mode = db_get_setting("dark_mode") ? db_get_setting("dark_mode") : 'light'; ?>">暗黑模式</label></th>
+                    <th scope="row">
+                        <label for="<?php echo db_setting_key('dark_mode');
+                                    $mode = db_get_setting("dark_mode") ? db_get_setting("dark_mode") : 'light'; ?>">暗黑模式</label>
+                    </th>
                     <td>
                         <label for="mode-light">
                             <input type="radio" name="<?php echo db_setting_key('dark_mode'); ?>" id="mode-light" value="light" <?php if ($mode == 'light') echo 'checked="checked"'; ?>>浅色模式</label>

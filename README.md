@@ -4,13 +4,15 @@
 
 数据本地化，解决豆瓣接口失效及图片防盗链。
 
-last version `4.3.3`
+last version `4.4.0`
 
 ## 快速配置
 
 [帮助文档](https://fatesinger.com/101050)
 
 ## 插入方式
+
+### 豆瓣链接
 
 直接在文章中粘贴豆瓣 url 即可。
 
@@ -33,3 +35,13 @@ last version `4.3.3`
 舞台剧展示
 
 <pre data-type="shortcode">https://www.douban.com/location/drama/11519197/</pre>
+
+### TMDB 链接
+
+电影展示
+
+<pre data-type="shortcode">https://www.themoviedb.org/movie/667538-transformers-rise-of-the-beasts</pre>
+
+剧集展示
+
+<pre data-type="shortcode">https://www.themoviedb.org/tv/1416-grey-s-anatomy</pre>

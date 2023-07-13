@@ -5,20 +5,23 @@
  */
 class WPD_Douban
 {
-    const VERSION = '4.3.3';
+    const VERSION = '4.4.0';
     private $base_url = 'https://fatesinger.com/dbapi/';
     private $perpage = 70;
     private $uid;
 
     public function __construct()
     {
-        $this->perpage = db_get_setting('perpage') ? db_get_setting('perpage') : 70;
+        $this->perpage = $this->db_get_setting('perpage') ? $this->db_get_setting('perpage') : 70;
         $plugin_file = plugin_basename(WPD_PATH . '/wp-douban.php');
 
         if (!$this->db_get_setting('disable_scripts')) add_action('wp_enqueue_scripts', [$this, 'wpd_load_scripts']);
         wp_embed_register_handler('doubanlist', '#https?:\/\/(\w+)\.douban\.com\/subject\/(\d+)#i', [$this, 'wp_embed_handler_doubanlist']);
         wp_embed_register_handler('doubanalbum', '#https?:\/\/www\.douban\.com\/(\w+)\/(\d+)#i', [$this, 'wp_embed_handler_doubanablum']);
         wp_embed_register_handler('doubandrama', '#https?:\/\/www\.douban\.com\/location\/(\w+)\/(\d+)#i', [$this, 'wp_embed_handler_doubandrama']);
+
+        wp_embed_register_handler('themoviedb', '#https?:\/\/www\.themoviedb\.org\/(\w+)\/(\d+)#i', [$this, 'wp_embed_handler_the_movie_db']);
+
         add_action('rest_api_init', [$this, 'wpd_register_rest_routes']);
         add_filter("plugin_action_links_{$plugin_file}", [$this, 'plugin_action_links'], 10, 4);
         add_shortcode('wpd', [$this, 'list_shortcode']);
@@ -129,7 +132,7 @@ class WPD_Douban
             $nav = '';
         }
         $only = count($include_types) == 1 ? " data-type='{$include_types[0]}'" : '';
-        $show_type = db_get_setting("show_type") ? '<div class="db--type">
+        $show_type = $this->db_get_setting("show_type") ? '<div class="db--type">
         <div class="db--typeItem" data-status="mark">想看</div>
         <div class="db--typeItem" data-status="doing">在看</div>
         <div class="db--typeItem is-active" data-status="done">看过</div>
@@ -215,6 +218,17 @@ class WPD_Douban
         return new WP_REST_Response($data);
     }
 
+    function wp_embed_handler_the_movie_db($matches, $attr, $url, $rawattr)
+    {
+
+        if (!is_singular() || !$this->db_get_setting('api_key')) return $url;
+        $type = $matches[1];
+        $id = $matches[2];
+        if (!in_array($type, ['tv', 'movie'])) return $url;
+        $html = $this->get_the_movie_db_detail($id, $type);
+        return apply_filters('embed_forbes', $html, $matches, $attr, $url, $rawattr);
+    }
+
     function wp_embed_handler_doubandrama($matches, $attr, $url, $rawattr)
     {
         if (!is_singular()) return $url;
@@ -245,12 +259,12 @@ class WPD_Douban
         return apply_filters('embed_forbes', $html, $matches, $attr, $url, $rawattr);
     }
 
-    public function get_subject_detail($id, $type)
+    public function get_the_movie_db_detail($id, $type)
     {
         $type = $type ? $type : 'movie';
-        $data = $this->fetch_subject($id, $type);
+        $data = $this->fetch_tmdb_subject($id, $type);
         if (!$data) return;
-        $cover = $this->db_get_setting('download_image') ? $this->wpd_save_images($id, $data->poster) : $data->poster;
+        $cover = $this->db_get_setting('download_image') ? $this->wpd_save_images($id, $data->poster, 'tmdb') : $data->poster;
         $output = '<div class="doulist-item"><div class="doulist-subject"><div class="doulist-post"><img referrerpolicy="no-referrer" src="' .  $cover . '"></div>';
         if (db_get_setting("show_remark") && $data->fav_time) {
             $output .= '<div class="db--viewTime JiEun">Marked ' . $data->fav_time . '</div>';
@@ -258,7 +272,25 @@ class WPD_Douban
         $output .= '<div class="doulist-content"><div class="doulist-title"><a href="' . $data->link . '" class="cute" target="_blank" rel="external nofollow">' . $data->name . '</a></div>';
         $output .= '<div class="rating"><span class="allstardark"><span class="allstarlight" style="width:' . $data->douban_score * 10 . '%"></span></span><span class="rating_nums"> ' . $data->douban_score . ' </span></div>';
         $output .= '<div class="abstract">';
-        $output .= db_get_setting("show_remark") && $data->remark ? $data->remark : $data->card_subtitle;
+        $output .= $this->db_get_setting("show_remark") && $data->remark ? $data->remark : $data->card_subtitle;
+        $output .= '</div></div></div></div>';
+        return $output;
+    }
+
+    public function get_subject_detail($id, $type)
+    {
+        $type = $type ? $type : 'movie';
+        $data = $this->fetch_subject($id, $type);
+        if (!$data) return;
+        $cover = $this->db_get_setting('download_image') ? $this->wpd_save_images($id, $data->poster) : $data->poster;
+        $output = '<div class="doulist-item"><div class="doulist-subject"><div class="doulist-post"><img referrerpolicy="no-referrer" src="' .  $cover . '"></div>';
+        if ($this->db_get_setting("show_remark") && $data->fav_time) {
+            $output .= '<div class="db--viewTime JiEun">Marked ' . $data->fav_time . '</div>';
+        }
+        $output .= '<div class="doulist-content"><div class="doulist-title"><a href="' . $data->link . '" class="cute" target="_blank" rel="external nofollow">' . $data->name . '</a></div>';
+        $output .= '<div class="rating"><span class="allstardark"><span class="allstarlight" style="width:' . $data->douban_score * 10 . '%"></span></span><span class="rating_nums"> ' . $data->douban_score . ' </span></div>';
+        $output .= '<div class="abstract">';
+        $output .= $this->db_get_setting("show_remark") && $data->remark ? $data->remark : $data->card_subtitle;
         $output .= '</div></div></div></div>';
         return $output;
     }
@@ -270,6 +302,29 @@ class WPD_Douban
         $movie = $wpdb->get_row("SELECT * FROM $wpdb->douban_movies WHERE `type` = '{$type}' AND id = '{$id}'");
         if (empty($movie)) {
             return false;
+        }
+
+        if ($movie->tmdb_id) {
+            $response = wp_remote_get("https://hk.fatesinger.com/api/" . $movie->tmdb_type . "/" . $movie->tmdb_id . "?api_key=" . $this->db_get_setting('api_key') . "&language=zh-CN", ['sslverify' => false]);
+            if (is_wp_error($response)) {
+                return false;
+            }
+
+            $data = json_decode(wp_remote_retrieve_body($response), true);
+            if ($data) {
+                $wpdb->update($wpdb->douban_movies, [
+                    'name' => isset($data['title']) ? $data['title'] : $data['name'],
+                    'poster' => "https://image.tmdb.org/t/p/original" . $data['poster_path'],
+                    'douban_id' => $data['id'],
+                    'douban_score' => $data['vote_average'],
+                    'link' => '',
+                    'year' => '',
+                    'type' => 'movie',
+                    'pubdate' => isset($data['release_date']) ? $data['release_date'] : $data['first_air_date'],
+                    'card_subtitle' => $data['overview'],
+                ], ['id' => $movie->id]);
+                return true;
+            }
         }
 
         if ($type == 'movie') {
@@ -301,11 +356,91 @@ class WPD_Douban
             'douban_id' => $data['id'],
             'douban_score' => $data['rating']['value'],
             'link' => $data['url'],
-            'year' => '',
+            'year' => $data['year'] ? $data['year'] : '',
             'type' => $type,
             'pubdate' => $data['pubdate'] ? $data['pubdate'][0] : '',
             'card_subtitle' => $data['card_subtitle']
         ], ['id' => $movie->id]);
+    }
+
+    public function fetch_tmdb_subject($id, $type)
+    {
+        $type = $type ? $type : 'movie';
+        global $wpdb;
+        $movie = $wpdb->get_row("SELECT * FROM $wpdb->douban_movies WHERE `tmdb_type` = '{$type}' AND tmdb_id = '{$id}'");
+        if ($movie) {
+            $movie->genres = [];
+            $genres = $wpdb->get_results("SELECT * FROM $wpdb->douban_genres WHERE `type` = '{$type}' AND `movie_id` = {$movie->id}");
+            if (!empty($genres)) {
+                foreach ($genres as $genre) {
+                    $movie->genres[] = $genre->name;
+                }
+            }
+            $fav = $wpdb->get_row("SELECT * FROM $wpdb->douban_faves WHERE `type` = '{$type}' AND `subject_id` = '{$movie->id}'");
+            if ($fav) {
+                $movie->fav_time = $fav->create_time;
+                $movie->score = $fav->score;
+                $movie->remark = $fav->remark;
+            } else {
+                $movie->fav_time = "";
+                $movie->score = "";
+                $movie->remark = "";
+            }
+            return $movie;
+        }
+
+        $response = wp_remote_get("https://hk.fatesinger.com/api/" . $type . "/" . $id . "?api_key=" . $this->db_get_setting('api_key') . "&language=zh-CN", ['sslverify' => false]);
+        if (is_wp_error($response)) {
+            return false;
+        }
+        $data = json_decode(wp_remote_retrieve_body($response), true);
+        if ($data) {
+            $wpdb->insert($wpdb->douban_movies, [
+                'name' => isset($data['title']) ? $data['title'] : $data['name'],
+                'poster' => "https://image.tmdb.org/t/p/original" . $data['poster_path'],
+                'douban_id' => $data['id'],
+                'douban_score' => $data['vote_average'],
+                'link' => '',
+                'year' => '',
+                'type' => 'movie',
+                'pubdate' => isset($data['release_date']) ? $data['release_date'] : $data['first_air_date'],
+                'card_subtitle' => $data['overview'],
+                'tmdb_type' => $type,
+                'tmdb_id' => $data['id']
+            ]);
+            $movie_id = '';
+            if ($wpdb->insert_id) {
+                $movie_id = $wpdb->insert_id;
+                if ($data['genres']) foreach ($data['genres'] as $genre) {
+                    $wpdb->insert(
+                        $wpdb->douban_genres,
+                        [
+                            'movie_id' => $movie_id,
+                            'name' => $genre['name'],
+                            'type' => $type,
+                        ]
+                    );
+                }
+            }
+            return (object) [
+                'id' => $movie_id,
+                'name' => isset($data['title']) ? $data['title'] : $data['name'],
+                'poster' => "https://image.tmdb.org/t/p/original" . $data['poster_path'],
+                'douban_id' => $data['id'],
+                'douban_score' => $data['vote_average'],
+                'link' => '',
+                'year' => '',
+                'type' => $type,
+                'pubdate' => isset($data['release_date']) ? $data['release_date'] : $data['first_air_date'],
+                'card_subtitle' => $data['overview'],
+                'genres' => $data['genres'],
+                'fav_time' => '',
+                'remark' => '',
+                'score' => ''
+            ];
+        } else {
+            return false;
+        }
     }
 
     public function fetch_subject($id, $type)
@@ -357,9 +492,9 @@ class WPD_Douban
                 'douban_id' => $data['id'],
                 'douban_score' => $data['rating']['value'],
                 'link' => $data['url'],
-                'year' => '',
+                'year' => $data['year'] ? $data['year'] : '',
                 'type' => $type,
-                'pubdate' => $data['pubdate'] ? $data['pubdate'][0] : '',
+                'pubdate' => isset($data['pubdate']) ? $data['pubdate'][0] : '',
                 'card_subtitle' => $data['card_subtitle']
             ]);
             $movie_id = '';
@@ -383,9 +518,9 @@ class WPD_Douban
                 'douban_id' => $data['id'],
                 'douban_score' => $data['rating']['value'],
                 'link' => $data['url'],
-                'year' => '',
+                'year' => $data['year'] ? $data['year'] : '',
                 'type' => $type,
-                'pubdate' => $data['pubdate'] ? $data['pubdate'][0] : '',
+                'pubdate' => isset($data['pubdate']) ? $data['pubdate'][0] : '',
                 'card_subtitle' => $data['card_subtitle'],
                 'genres' => $data['genres'],
                 'fav_time' => '',
@@ -397,9 +532,9 @@ class WPD_Douban
         }
     }
 
-    private function wpd_save_images($id, $url)
+    private function wpd_save_images($id, $url, $type = "")
     {
-        $e = ABSPATH . 'douban_cache/' . $id . '.jpg';
+        $e = ABSPATH . 'douban_cache/' . $type . $id . '.jpg';
         if (!is_file($e)) {
 
             $referer = 'https://m.douban.com';
@@ -411,7 +546,7 @@ class WPD_Douban
             curl_close($ch);
             file_put_contents($e, $imageData);
         }
-        $url = home_url('/') . 'douban_cache/' . $id . '.jpg';
+        $url = home_url('/') . 'douban_cache/' . $type . $id . '.jpg';
         return $url;
     }
 
