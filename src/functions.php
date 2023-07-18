@@ -5,7 +5,7 @@
  */
 class WPD_Douban
 {
-    const VERSION = '4.4.0';
+    const VERSION = '4.4.1';
     private $base_url = 'https://fatesinger.com/dbapi/';
     private $perpage = 70;
     private $uid;
@@ -221,7 +221,7 @@ class WPD_Douban
     function wp_embed_handler_the_movie_db($matches, $attr, $url, $rawattr)
     {
 
-        if (!is_singular() || !$this->db_get_setting('api_key')) return $url;
+        if ((!is_singular() && !$this->db_get_setting('home_render')) || !$this->db_get_setting('api_key')) return $url;
         $type = $matches[1];
         $id = $matches[2];
         if (!in_array($type, ['tv', 'movie'])) return $url;
@@ -231,7 +231,7 @@ class WPD_Douban
 
     function wp_embed_handler_doubandrama($matches, $attr, $url, $rawattr)
     {
-        if (!is_singular()) return $url;
+        if (!is_singular() && !$this->db_get_setting('home_render')) return $url;
         $type = $matches[1];
         $id = $matches[2];
         if (!in_array($type, ['drama'])) return $url;
@@ -241,7 +241,7 @@ class WPD_Douban
 
     function wp_embed_handler_doubanablum($matches, $attr, $url, $rawattr)
     {
-        if (!is_singular()) return $url;
+        if (!is_singular() && !$this->db_get_setting('home_render')) return $url;
         $type = $matches[1];
         $id = $matches[2];
         if (!in_array($type, ['game'])) return $url;
@@ -251,7 +251,7 @@ class WPD_Douban
 
     public function wp_embed_handler_doubanlist($matches, $attr, $url, $rawattr)
     {
-        if (!is_singular()) return $url;
+        if (!is_singular() && !$this->db_get_setting('home_render')) return $url;
         $type = $matches[1];
         if (!in_array($type, ['movie', 'book', 'music'])) return $url;
         $id = $matches[2];

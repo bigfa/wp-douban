@@ -87,6 +87,15 @@
                     </td>
                 </tr>
                 <tr valign="top">
+                    <th scope="row"><label for="<?php echo db_setting_key('home_render'); ?>">首页渲染</label></th>
+                    <td>
+                        <label for="<?php echo db_setting_key('home_render'); ?>">
+                            <input type="checkbox" name="<?php echo db_setting_key('home_render'); ?>" id="show_remark" value="1" <?php if (db_get_setting("home_render")) echo 'checked="checked"'; ?>>
+                        </label>
+                        <p class="description">默认只会在文章页自动渲染条目链接，开启后在非文章页也会渲染。</p>
+                    </td>
+                </tr>
+                <tr valign="top">
                     <th scope="row"><label for="<?php echo db_setting_key('download_image'); ?>">下载图片</label></th>
                     <td>
                         <label for="<?php echo db_setting_key('download_image'); ?>">
