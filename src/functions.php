@@ -5,7 +5,7 @@
  */
 class WPD_Douban
 {
-    const VERSION = '4.4.1';
+    const VERSION = '4.4.2';
     private $base_url = 'https://fatesinger.com/dbapi/';
     private $perpage = 70;
     private $uid;
@@ -207,7 +207,11 @@ class WPD_Douban
 
         $data = [];
         foreach ($goods as $good) {
-            if ($this->db_get_setting('download_image')) $good->poster = $this->wpd_save_images($good->douban_id, $good->poster);
+            if ($this->db_get_setting('download_image')) {
+                $good->poster = $this->wpd_save_images($good->douban_id, $good->poster);
+            } else if (in_array($good->type, ['movie', 'book', 'music'])) {
+                $good->poster = "https://dou.img.lithub.cc/" . $type . "/" . $good->douban_id . ".jpg";
+            }
             $good->create_time = date('Y-m-d', strtotime($good->create_time));
             if ($top250 && ($good->type == 'movie' || $good->type == 'book') && $this->db_get_setting('top250')) {
                 $re = $wpdb->get_results("SELECT * FROM $wpdb->douban_relation WHERE `collection_id` = {$top250->id} AND  `movie_id` = {$good->id}");
@@ -269,7 +273,7 @@ class WPD_Douban
         if (db_get_setting("show_remark") && $data->fav_time) {
             $output .= '<div class="db--viewTime JiEun">Marked ' . $data->fav_time . '</div>';
         }
-        $output .= '<div class="doulist-content"><div class="doulist-title"><a href="' . $data->link . '" class="cute" target="_blank" rel="external nofollow">' . $data->name . '</a></div>';
+        $output .= '<div class="doulist-content"><div class="doulist-title"><a href="' . ($data->link ? $data->link : "https://www.themoviedb.org/" . $type . "/" . $id) . '" class="cute" target="_blank" rel="external nofollow">' . $data->name . '</a></div>';
         $output .= '<div class="rating"><span class="allstardark"><span class="allstarlight" style="width:' . $data->douban_score * 10 . '%"></span></span><span class="rating_nums"> ' . $data->douban_score . ' </span></div>';
         $output .= '<div class="abstract">';
         $output .= $this->db_get_setting("show_remark") && $data->remark ? $data->remark : $data->card_subtitle;
@@ -282,7 +286,7 @@ class WPD_Douban
         $type = $type ? $type : 'movie';
         $data = $this->fetch_subject($id, $type);
         if (!$data) return;
-        $cover = $this->db_get_setting('download_image') ? $this->wpd_save_images($id, $data->poster) : $data->poster;
+        $cover = $this->db_get_setting('download_image') ? $this->wpd_save_images($id, $data->poster) : (in_array($data->type, ['movie', 'book', 'music']) ? "https://dou.img.lithub.cc/" . $type . "/" . $data->douban_id . ".jpg" : $data->poster);
         $output = '<div class="doulist-item"><div class="doulist-subject"><div class="doulist-post"><img referrerpolicy="no-referrer" src="' .  $cover . '"></div>';
         if ($this->db_get_setting("show_remark") && $data->fav_time) {
             $output .= '<div class="db--viewTime JiEun">Marked ' . $data->fav_time . '</div>';
@@ -317,7 +321,7 @@ class WPD_Douban
                     'poster' => "https://image.tmdb.org/t/p/original" . $data['poster_path'],
                     'douban_id' => $data['id'],
                     'douban_score' => $data['vote_average'],
-                    'link' => '',
+                    'link' => $data['homepage'],
                     'year' => '',
                     'type' => 'movie',
                     'pubdate' => isset($data['release_date']) ? $data['release_date'] : $data['first_air_date'],
@@ -400,7 +404,7 @@ class WPD_Douban
                 'poster' => "https://image.tmdb.org/t/p/original" . $data['poster_path'],
                 'douban_id' => $data['id'],
                 'douban_score' => $data['vote_average'],
-                'link' => '',
+                'link' => $data['homepage'],
                 'year' => '',
                 'type' => 'movie',
                 'pubdate' => isset($data['release_date']) ? $data['release_date'] : $data['first_air_date'],
@@ -428,7 +432,7 @@ class WPD_Douban
                 'poster' => "https://image.tmdb.org/t/p/original" . $data['poster_path'],
                 'douban_id' => $data['id'],
                 'douban_score' => $data['vote_average'],
-                'link' => '',
+                'link' => $data['homepage'],
                 'year' => '',
                 'type' => $type,
                 'pubdate' => isset($data['release_date']) ? $data['release_date'] : $data['first_air_date'],
