@@ -5,7 +5,7 @@
  */
 class WPD_Douban
 {
-    const VERSION = '4.4.2';
+    const VERSION = '4.5.0';
     private $base_url = 'https://fatesinger.com/dbapi/';
     private $perpage = 70;
     private $uid;
@@ -111,13 +111,45 @@ class WPD_Douban
         }
     }
 
+    protected function sanitize_subject_type($type = '', $default = 'movie')
+    {
+        $allowed_types = ['movie', 'music', 'book', 'game', 'drama', 'tv'];
+        $type = sanitize_key((string) $type);
+        return in_array($type, $allowed_types, true) ? $type : $default;
+    }
+
+    protected function sanitize_subject_status($status = '', $default = 'done')
+    {
+        $allowed_status = ['done', 'doing', 'mark'];
+        $status = sanitize_key((string) $status);
+        return in_array($status, $allowed_status, true) ? $status : $default;
+    }
+
+    protected function sanitize_date_value($date = '')
+    {
+        $date = trim((string) $date);
+        if (!$date) {
+            return '';
+        }
+
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+            return $date;
+        }
+
+        if (preg_match('/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}$/', $date)) {
+            return $date;
+        }
+
+        return '';
+    }
+
     public function render_collection($type, $start, $end, $status, $style)
     {
         return '<div class="db--collection" data-status="' . $status . '" data-type="' . $type . '" data-start="' . $start . '" data-end="' . $end . '" ' . ($style ? 'data-style="' . $style . '"' : '') . '></div>
         ';
     }
 
-    public function render_template($include_types = ['movie', 'music', 'book', 'game', 'drama'], $style)
+    public function render_template($include_types = ['movie', 'music', 'book', 'game', 'drama'], $style = '')
     {
         $types = ['movie', 'music', 'book', 'game', 'drama'];
         $nav = '';
@@ -167,9 +199,10 @@ class WPD_Douban
 
     public function get_genres($data)
     {
-        $type = $data['type'] ? $data['type'] : 'movie';
+        $type = $this->sanitize_subject_type(isset($data['type']) ? $data['type'] : 'movie');
         global $wpdb;
-        $goods = $wpdb->get_results("SELECT name FROM $wpdb->douban_genres WHERE `type` = '{$type}' GROUP BY `name`");
+        $query = $wpdb->prepare("SELECT name FROM $wpdb->douban_genres WHERE `type` = %s GROUP BY `name`", $type);
+        $goods = $wpdb->get_results($query);
         $data = [];
         foreach ($goods as $good) {
             $data[] = $good;
@@ -180,7 +213,9 @@ class WPD_Douban
     public function get_collection($douban_id)
     {
         global $wpdb;
-        $collection = $wpdb->get_row("SELECT * FROM $wpdb->douban_collection WHERE `douban_id` = '{$douban_id}'");
+        $collection = $wpdb->get_row(
+            $wpdb->prepare("SELECT * FROM $wpdb->douban_collection WHERE `douban_id` = %s", (string) $douban_id)
+        );
         if (!$collection) {
             return false;
         } else {
@@ -191,18 +226,70 @@ class WPD_Douban
     public function get_subjects($data)
     {
         global $wpdb;
-        $offset = $data['paged'] ? ($data['paged'] - 1) * $this->perpage : 0;
-        $type = $data['type'] ? $data['type'] : 'movie';
-        $status = $data['status'] ? $data['status'] : 'done';
-        $genre = $data['genre'] ? implode("','", json_decode($data['genre'], true)) : '';
-        $endtime = $data['end_time'] ? $data['end_time'] : date('Y-m-d');
-        $filterTime = ($data['start_time']) ? " AND f.create_time BETWEEN '{$data['start_time']}' AND '{$endtime}'" : '';
+        $paged = isset($data['paged']) ? absint($data['paged']) : 1;
+        if ($paged < 1) {
+            $paged = 1;
+        }
+        $limit = absint($this->perpage);
+        if ($limit < 1) {
+            $limit = 70;
+        } elseif ($limit > 200) {
+            $limit = 200;
+        }
+        $offset = ($paged - 1) * $limit;
+        $type = $this->sanitize_subject_type(isset($data['type']) ? $data['type'] : 'movie');
+        $status = $this->sanitize_subject_status(isset($data['status']) ? $data['status'] : 'done');
+        $genres = [];
+        if (!empty($data['genre'])) {
+            $genre_data = json_decode($data['genre'], true);
+            if (is_array($genre_data)) {
+                foreach ($genre_data as $genre_name) {
+                    $genre_name = sanitize_text_field((string) $genre_name);
+                    if ($genre_name !== '') {
+                        $genres[] = $genre_name;
+                    }
+                }
+                $genres = array_values(array_unique($genres));
+            }
+        }
+        $start_time = $this->sanitize_date_value(isset($data['start_time']) ? $data['start_time'] : '');
+        $end_time = $this->sanitize_date_value(isset($data['end_time']) ? $data['end_time'] : '');
+        if (!$end_time) {
+            $end_time = date('Y-m-d');
+        }
         $top250 = $type == 'book' ? $this->get_collection('book_top250') : $this->get_collection('movie_top250');
-
-        if ($genre) {
-            $goods = $wpdb->get_results("SELECT m.*, f.create_time , f.remark , f.status FROM ( $wpdb->douban_movies m LEFT JOIN $wpdb->douban_genres g ON m.id = g.movie_id ) LEFT JOIN $wpdb->douban_faves f ON m.id = f.subject_id WHERE f.type = '{$type}' AND f.status = '{$status}' AND g.name IN ('{$genre}') GROUP BY m.id ORDER BY f.create_time DESC LIMIT {$this->perpage} OFFSET {$offset}");
+        if (!empty($genres)) {
+            $genre_placeholders = implode(',', array_fill(0, count($genres), '%s'));
+            $query_params = array_merge([$type, $status], $genres, [$limit, $offset]);
+            $query = $wpdb->prepare(
+                "SELECT m.*, f.create_time , f.remark , f.status
+                 FROM ( $wpdb->douban_movies m LEFT JOIN $wpdb->douban_genres g ON m.id = g.movie_id )
+                 LEFT JOIN $wpdb->douban_faves f ON m.id = f.subject_id
+                 WHERE f.type = %s AND f.status = %s AND g.name IN ($genre_placeholders)
+                 GROUP BY m.id
+                 ORDER BY f.create_time DESC
+                 LIMIT %d OFFSET %d",
+                $query_params
+            );
+            $goods = $wpdb->get_results($query);
         } else {
-            $goods = $wpdb->get_results("SELECT m.*, f.create_time, f.remark, f.status FROM $wpdb->douban_movies m LEFT JOIN $wpdb->douban_faves f ON m.id = f.subject_id WHERE f.type = '{$type}' AND f.status = '{$status}' {$filterTime} ORDER BY f.create_time DESC LIMIT {$this->perpage} OFFSET {$offset}");
+            $query = "SELECT m.*, f.create_time, f.remark, f.status
+                      FROM $wpdb->douban_movies m
+                      LEFT JOIN $wpdb->douban_faves f ON m.id = f.subject_id
+                      WHERE f.type = %s AND f.status = %s";
+            $query_params = [$type, $status];
+
+            if ($start_time) {
+                $query .= " AND f.create_time BETWEEN %s AND %s";
+                $query_params[] = $start_time;
+                $query_params[] = $end_time;
+            }
+
+            $query .= " ORDER BY f.create_time DESC LIMIT %d OFFSET %d";
+            $query_params[] = $limit;
+            $query_params[] = $offset;
+
+            $goods = $wpdb->get_results($wpdb->prepare($query, $query_params));
         }
 
         $data = [];
@@ -214,7 +301,13 @@ class WPD_Douban
             }
             $good->create_time = date('Y-m-d', strtotime($good->create_time));
             if ($top250 && ($good->type == 'movie' || $good->type == 'book') && $this->db_get_setting('top250')) {
-                $re = $wpdb->get_results("SELECT * FROM $wpdb->douban_relation WHERE `collection_id` = {$top250->id} AND  `movie_id` = {$good->id}");
+                $re = $wpdb->get_results(
+                    $wpdb->prepare(
+                        "SELECT * FROM $wpdb->douban_relation WHERE `collection_id` = %d AND `movie_id` = %d",
+                        absint($top250->id),
+                        absint($good->id)
+                    )
+                );
                 $good->is_top250 = !empty($re);
             }
             $data[] = $good;
@@ -586,8 +679,14 @@ class WPD_Douban
     {
         $url = "{$this->base_url}subject_collection/{$name}/items?start=0&count=250&items_only=1&ck=xgtY&for_mobile=1";
         $response = wp_remote_get($url);
+        if (is_wp_error($response)) {
+            return false;
+        }
         $data = json_decode(wp_remote_retrieve_body($response), true);
-        $interests = $data['subject_collection_items'];
+        $interests = isset($data['subject_collection_items']) && is_array($data['subject_collection_items']) ? $data['subject_collection_items'] : [];
+        if (empty($interests)) {
+            return false;
+        }
         global $wpdb;
         $collection = $this->get_collection($name);
         $collection_id = '';
@@ -602,21 +701,32 @@ class WPD_Douban
         }
 
         foreach ($interests as $interest) {
-            $movie = $wpdb->get_row("SELECT * FROM $wpdb->douban_movies WHERE `type` = '{$interest['type']}' AND douban_id = {$interest['id']}");
+            $subject_type = $this->sanitize_subject_type(isset($interest['type']) ? $interest['type'] : 'movie');
+            $douban_id = isset($interest['id']) ? intval($interest['id']) : 0;
+            if (!$douban_id) {
+                continue;
+            }
+            $movie = $wpdb->get_row(
+                $wpdb->prepare(
+                    "SELECT * FROM $wpdb->douban_movies WHERE `type` = %s AND douban_id = %d",
+                    $subject_type,
+                    $douban_id
+                )
+            );
             $movie_id = '';
             if (!$movie) {
                 $wpdb->insert(
-                    $wpdb->douban_douban_movies,
+                    $wpdb->douban_movies,
                     array(
-                        'name' => $interest['title'],
-                        'poster' => $interest['pic']['large'],
-                        'douban_id' => $interest['id'],
-                        'douban_score' => $interest['rating']['value'],
-                        'link' => $interest['url'],
+                        'name' => isset($interest['title']) ? $interest['title'] : '',
+                        'poster' => isset($interest['pic']['large']) ? $interest['pic']['large'] : '',
+                        'douban_id' => $douban_id,
+                        'douban_score' => isset($interest['rating']['value']) ? $interest['rating']['value'] : '',
+                        'link' => isset($interest['url']) ? $interest['url'] : '',
                         'year' => '',
-                        'type' => $interest['type'],
+                        'type' => $subject_type,
                         'pubdate' => '',
-                        'card_subtitle' => $interest['card_subtitle'],
+                        'card_subtitle' => isset($interest['card_subtitle']) ? $interest['card_subtitle'] : '',
                     )
                 );
                 $movie_id = $wpdb->insert_id;
@@ -624,7 +734,16 @@ class WPD_Douban
                 $movie_id = $movie->id;
             }
 
-            $relation = $wpdb->get_row("SELECT * FROM $wpdb->douban_relation WHERE `movie_id` = {$movie_id} AND `collection_id` = {$collection_id}");
+            if (!$movie_id) {
+                continue;
+            }
+            $relation = $wpdb->get_row(
+                $wpdb->prepare(
+                    "SELECT * FROM $wpdb->douban_relation WHERE `movie_id` = %d AND `collection_id` = %d",
+                    absint($movie_id),
+                    absint($collection_id)
+                )
+            );
 
             if (!$relation) {
                 $wpdb->insert($wpdb->douban_relation, [

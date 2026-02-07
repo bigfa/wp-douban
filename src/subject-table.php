@@ -59,18 +59,48 @@ class Subject_List_Table extends \WP_List_Table
         global $wpdb;
 
         $currentPage = $this->get_pagenum();
-
         $offset = ($currentPage - 1) * 40;
+        $allowed_types = ['all', 'movie', 'book', 'music', 'game', 'drama'];
+        $allowed_status = ['done', 'doing', 'mark'];
 
-        $filter = !empty($_GET['subject_type']) && $_GET['subject_type'] != 'all' ? " AND f.type = '{$_GET['subject_type']}'" : '';
-        $filter .= !empty($_GET['s']) ? " AND m.name LIKE '%{$_GET['s']}%'" : '';
-        $filter .= !empty($_GET['status']) ? " f.status = '{$_GET['status']}'" : "";
-        $subjects = $wpdb->get_results("SELECT m.*, f.create_time, f.remark, f.score , f.status FROM $wpdb->douban_movies m LEFT JOIN $wpdb->douban_faves f ON m.id = f.subject_id WHERE 1=1{$filter} ORDER BY f.create_time DESC LIMIT 40 OFFSET {$offset}");
+        $subject_type = isset($_GET['subject_type']) ? sanitize_key(wp_unslash($_GET['subject_type'])) : 'all';
+        if (!in_array($subject_type, $allowed_types, true)) {
+            $subject_type = 'all';
+        }
+        $status = isset($_GET['status']) ? sanitize_key(wp_unslash($_GET['status'])) : '';
+        if (!in_array($status, $allowed_status, true)) {
+            $status = '';
+        }
+        $search = isset($_GET['s']) ? sanitize_text_field(wp_unslash($_GET['s'])) : '';
+
+        $where = ['1=1'];
+        $params = [];
+        if ('all' !== $subject_type) {
+            $where[] = 'f.type = %s';
+            $params[] = $subject_type;
+        }
+        if ('' !== $search) {
+            $where[] = 'm.name LIKE %s';
+            $params[] = '%' . $wpdb->esc_like($search) . '%';
+        }
+        if ('' !== $status) {
+            $where[] = 'f.status = %s';
+            $params[] = $status;
+        }
+        $query = "SELECT m.*, f.create_time, f.remark, f.score , f.status
+                  FROM $wpdb->douban_movies m
+                  LEFT JOIN $wpdb->douban_faves f ON m.id = f.subject_id
+                  WHERE " . implode(' AND ', $where) . "
+                  ORDER BY f.create_time DESC
+                  LIMIT %d OFFSET %d";
+        $params[] = 40;
+        $params[] = $offset;
+        $subjects = $wpdb->get_results($wpdb->prepare($query, $params));
 
         $this->items = $subjects;
 
         $this->set_pagination_args(array(
-            'total_items' => $this->get_subject_count($_GET['subject_type']),
+            'total_items' => $this->get_subject_count($subject_type),
             'per_page'    => 40,
         ));
     }
@@ -79,7 +109,7 @@ class Subject_List_Table extends \WP_List_Table
     {
 
         $views = array();
-        $hooks_type = (!empty($_GET['subject_type']) ? $_GET['subject_type'] : 'all');
+        $hooks_type = isset($_GET['subject_type']) ? sanitize_key(wp_unslash($_GET['subject_type'])) : 'all';
 
         $types = array(
             'all'      => '所有条目',
@@ -89,6 +119,9 @@ class Subject_List_Table extends \WP_List_Table
             'game'   => '游戏',
             'drama'   => '舞台剧',
         );
+        if (!isset($types[$hooks_type])) {
+            $hooks_type = 'all';
+        }
 
         /**
          * Filters the filter types on the cron event listing screen.
@@ -127,9 +160,28 @@ class Subject_List_Table extends \WP_List_Table
     protected function get_subject_count($type)
     {
         global $wpdb;
-        $filter = $type && $type != 'all' ? " AND f.type = '{$type}'" : '';
-        $filter .= !empty($_GET['s']) ? " AND m.name LIKE '%{$_GET['s']}%'" : '';
-        $subjects = $wpdb->get_results("SELECT m.id FROM $wpdb->douban_movies m LEFT JOIN $wpdb->douban_faves f ON m.id = f.subject_id WHERE f.status = 'done'{$filter}");
+        $allowed_types = ['all', 'movie', 'book', 'music', 'game', 'drama'];
+        $type = sanitize_key((string) $type);
+        if (!in_array($type, $allowed_types, true)) {
+            $type = 'all';
+        }
+        $search = isset($_GET['s']) ? sanitize_text_field(wp_unslash($_GET['s'])) : '';
+
+        $where = ["f.status = 'done'"];
+        $params = [];
+        if ('all' !== $type) {
+            $where[] = 'f.type = %s';
+            $params[] = $type;
+        }
+        if ('' !== $search) {
+            $where[] = 'm.name LIKE %s';
+            $params[] = '%' . $wpdb->esc_like($search) . '%';
+        }
+        $query = "SELECT m.id
+                  FROM $wpdb->douban_movies m
+                  LEFT JOIN $wpdb->douban_faves f ON m.id = f.subject_id
+                  WHERE " . implode(' AND ', $where);
+        $subjects = !empty($params) ? $wpdb->get_results($wpdb->prepare($query, $params)) : $wpdb->get_results($query);
         return count($subjects);
     }
 
