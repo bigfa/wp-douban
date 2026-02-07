@@ -1,0 +1,257 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WP-Douban 4.5.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wp-douban\n"
+"POT-Creation-Date: 2026-02-07 10:06+0000\n"
+"PO-Revision-Date: 2026-02-07 10:06+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Codex\n"
+"X-Domain: wp-douban\n"
+
+msgid "Settings"
+msgstr "设置"
+
+msgid "Items"
+msgstr "条目"
+
+msgid "Help"
+msgstr "帮助"
+
+msgid "Movies"
+msgstr "电影"
+
+msgid "Music"
+msgstr "音乐"
+
+msgid "Books"
+msgstr "图书"
+
+msgid "Games"
+msgstr "游戏"
+
+msgid "Drama"
+msgstr "舞台剧"
+
+msgid "Want to watch"
+msgstr "想看"
+
+msgid "Watching"
+msgstr "在看"
+
+msgid "Watched"
+msgstr "已看"
+
+msgid "Clear Logs"
+msgstr "清空日志"
+
+msgid "Type"
+msgstr "类型"
+
+msgid "Action"
+msgstr "操作"
+
+msgid "Status"
+msgstr "状态"
+
+msgid "Message"
+msgstr "备注"
+
+msgid "Date"
+msgstr "时间"
+
+msgid "WP DOUBAN Settings"
+msgstr "WP DOUBAN 设置"
+
+msgid "WP_DOUBAN"
+msgstr "WP_DOUBAN"
+
+msgid "My Items"
+msgstr "我的条目"
+
+msgid "All Items"
+msgstr "所有条目"
+
+msgid "Plugin Logs"
+msgstr "插件日志"
+
+msgid "Edit Item"
+msgstr "编辑条目"
+
+msgid "Douban"
+msgstr "豆瓣"
+
+msgid "Unmark"
+msgstr "取消标记"
+
+msgid "Mark"
+msgstr "标记"
+
+msgid "Sync Item"
+msgstr "同步条目"
+
+msgid "Edit"
+msgstr "编辑"
+
+msgid "Delete"
+msgstr "删除"
+
+msgid "Title"
+msgstr "标题"
+
+msgid "Poster"
+msgstr "封面"
+
+msgid "Douban Rating"
+msgstr "豆瓣评分"
+
+msgid "Description"
+msgstr "描述"
+
+msgid "Source"
+msgstr "来源"
+
+msgid "Rating"
+msgstr "评分"
+
+msgid "My Comment"
+msgstr "我的短评"
+
+msgid "My Score"
+msgstr "我的评分"
+
+msgid "Logs"
+msgstr "日志"
+
+msgid "Plugin Settings"
+msgstr "插件设置"
+
+msgid "Usage"
+msgstr "使用方法"
+
+msgid "Please read the"
+msgstr "请查看"
+
+msgid "help document"
+msgstr "帮助文档"
+
+msgid "Display Settings"
+msgstr "显示设置"
+
+msgid "Account ID"
+msgstr "帐号ID"
+
+msgid "Items Per Page"
+msgstr "每页显示条目数"
+
+msgid "TMDB API Key"
+msgstr "TMDB API Key"
+
+msgid "Open your profile URL like <code>%s</code>, and the numeric part is your account ID."
+msgstr "点击你的个人主页，URL类似为<code>%s</code>，数字部分就是你的ID。"
+
+msgid "Create your <code>TMDB API Key</code> at https://www.themoviedb.org/settings/api"
+msgstr "在 https://www.themoviedb.org/settings/api 申请<code>TMDB API Key</code>"
+
+msgid "Theme Mode"
+msgstr "暗黑模式"
+
+msgid "Light"
+msgstr "浅色模式"
+
+msgid "Dark"
+msgstr "深色模式"
+
+msgid "Follow System"
+msgstr "跟随系统"
+
+msgid "Custom CSS"
+msgstr "自定义CSS"
+
+msgid "Please input valid CSS."
+msgstr "请输入合法的CSS。"
+
+msgid "Show Comment"
+msgstr "展示短评"
+
+msgid "Show comment and marked date when rendering a single item if it is marked."
+msgstr "开启后文章引入单条目时如果标记过则展示短评和标记时间"
+
+msgid "Show Status Tabs"
+msgstr "开启分类"
+
+msgid "By default only watched items are shown. Enable this to show want-to-watch / watching / watched."
+msgstr "默认只展示看过的条目，开启后会展示想看/在看/看过"
+
+msgid "Render on Home"
+msgstr "首页渲染"
+
+msgid "By default links are auto-rendered only on single posts. Enable this to render on non-single pages too."
+msgstr "默认只会在文章页自动渲染条目链接，开启后在非文章页也会渲染。"
+
+msgid "Download Images"
+msgstr "下载图片"
+
+msgid "Download poster images to local storage."
+msgstr "开启后将封面图片下载到本地。"
+
+msgid "Disable Assets"
+msgstr "静态文件"
+
+msgid "Do not load plugin bundled CSS/JS."
+msgstr "开启后将不加载插件自带的静态文件。"
+
+msgid "Douban Movie Top 250"
+msgstr "豆瓣电影Top250"
+
+msgid "Enable to sync the Douban movie <code>top250</code> list periodically and show the <code>top250</code> badge on matched items."
+msgstr "开启该选项则会定期同步豆瓣电影<code>top250</code> 清单，当条目在清单中时展示<code>top250</code> 标识。"
+
+msgid "Douban Book Top 250"
+msgstr "豆瓣图书Top250"
+
+msgid "Enable to sync the Douban book <code>top250</code> list periodically and show the <code>top250</code> badge on matched items."
+msgstr "开启该选项则会定期同步豆瓣图书<code>top250</code> 清单，当条目在清单中时展示<code>top250</code> 标识。"
+
+msgid "Save Changes"
+msgstr "保存设置"
+
+msgid "Search Items"
+msgstr "搜索条目"
+
+msgid "The item does not exist or has been deleted."
+msgstr "条目不存在或已删除。"
+
+msgid "Item"
+msgstr "条目"
+
+msgid "Poster cached."
+msgstr "封面已缓存。"
+
+msgid "Original poster may not be available due to Douban restrictions."
+msgstr "因豆瓣原因，原始封面可能无法显示。"
+
+msgid "Poster URL"
+msgstr "海报地址"
+
+msgid "Subtitle"
+msgstr "副标题"
+
+msgid "Watched At"
+msgstr "观看时间"
+
+msgid "Comment"
+msgstr "短评"
+
+msgid "Write a comment"
+msgstr "输入短评"
+
+msgid "Score"
+msgstr "评分"
+
+msgid "Marked Items"
+msgstr "标记的条目"

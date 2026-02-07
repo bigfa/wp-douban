@@ -54,6 +54,10 @@ class db_sync extends WPD_Douban
                         $confition = false;
                     } else {
                         foreach ($data as $interest) {
+                            if (!isset($interest['subject'])) {
+                                continue;
+                            }
+
                             $movie = $wpdb->get_row("SELECT * FROM $wpdb->douban_movies WHERE `type` = '{$type}' AND douban_id = {$interest['subject']['id']}");
                             if (!$movie) {
                                 $wpdb->insert(

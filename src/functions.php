@@ -84,17 +84,17 @@ class WPD_Douban
             'crontrol-events'    => sprintf(
                 '<a href="%s">%s</a>',
                 esc_url(admin_url('admin.php?page=wpdouban')),
-                '设置'
+                esc_html__('Settings', 'wp-douban')
             ),
             'crontrol-schedules' => sprintf(
                 '<a href="%s">%s</a>',
                 esc_url(admin_url('admin.php?page=subject')),
-                '条目'
+                esc_html__('Items', 'wp-douban')
             ),
             'crontrol-help' => sprintf(
                 '<a href="%s" target="_blank">%s</a>',
                 'https://fatesinger.com/101050',
-                '帮助'
+                esc_html__('Help', 'wp-douban')
             ),
         );
 
@@ -152,11 +152,19 @@ class WPD_Douban
     public function render_template($include_types = ['movie', 'music', 'book', 'game', 'drama'], $style = '')
     {
         $types = ['movie', 'music', 'book', 'game', 'drama'];
+        $type_labels = [
+            'movie' => __('Movies', 'wp-douban'),
+            'music' => __('Music', 'wp-douban'),
+            'book' => __('Books', 'wp-douban'),
+            'game' => __('Games', 'wp-douban'),
+            'drama' => __('Drama', 'wp-douban'),
+        ];
         $nav = '';
         $i = 0;
         foreach ($types as $type) {
             if (in_array($type, $include_types)) {
-                $nav .= '<div class="db--navItem JiEun' . ($i == 0 ? ' current' : '') . '" data-type="' . $type . '">' . $type . '</div>';
+                $label = isset($type_labels[$type]) ? $type_labels[$type] : $type;
+                $nav .= '<div class="db--navItem JiEun' . ($i == 0 ? ' current' : '') . '" data-type="' . esc_attr($type) . '">' . esc_html($label) . '</div>';
                 $i++;
             }
         }
@@ -165,9 +173,9 @@ class WPD_Douban
         }
         $only = count($include_types) == 1 ? " data-type='{$include_types[0]}'" : '';
         $show_type = $this->db_get_setting("show_type") ? '<div class="db--type">
-        <div class="db--typeItem" data-status="mark">想看</div>
-        <div class="db--typeItem" data-status="doing">在看</div>
-        <div class="db--typeItem is-active" data-status="done">看过</div>
+        <div class="db--typeItem" data-status="mark">' . esc_html__('Want to watch', 'wp-douban') . '</div>
+        <div class="db--typeItem" data-status="doing">' . esc_html__('Watching', 'wp-douban') . '</div>
+        <div class="db--typeItem is-active" data-status="done">' . esc_html__('Watched', 'wp-douban') . '</div>
     </div>' : '';
         return '<section class="db--container"><nav class="db--nav">' . $nav . '
     </nav>

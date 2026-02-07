@@ -107,8 +107,9 @@ class Log_Table extends \WP_List_Table
 
 
         printf(
-            '<a href="%s" class="button">清空日志</a>',
-            esc_url($link)
+            '<a href="%s" class="button">%s</a>',
+            esc_url($link),
+            esc_html__('Clear Logs', 'wp-douban')
         );
     }
 
@@ -137,11 +138,11 @@ class Log_Table extends \WP_List_Table
     public function get_columns()
     {
         return array(
-            'type'     => '类型',
-            'action' => '操作',
-            'status' => '状态',
-            'message' => '备注',
-            'create_time' => '时间',
+            'type'     => __('Type', 'wp-douban'),
+            'action' => __('Action', 'wp-douban'),
+            'status' => __('Status', 'wp-douban'),
+            'message' => __('Message', 'wp-douban'),
+            'create_time' => __('Date', 'wp-douban'),
             'account_id' => 'ID',
         );
     }

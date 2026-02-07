@@ -3,12 +3,19 @@
 add_action('admin_menu', 'db_menu');
 function db_menu()
 {
-    add_menu_page('WP DOUBAN 设置', 'WP_DOUBAN', 'manage_options', 'wpdouban', 'db_setting_page', 'dashicons-chart-pie');
-    add_submenu_page('wpdouban', 'WP DOUBAN 设置', '参数设置', 'manage_options', 'wpdouban', 'db_setting_page');
-    add_submenu_page('wpdouban', '我的条目', '我的条目', 'manage_options', 'subject', 'db_subject_page');
-    add_submenu_page('wpdouban', '所有条目', '所有条目', 'manage_options', 'subject_all', 'db_all_subject_page');
-    add_submenu_page('wpdouban', '插件日志', '插件日志', 'manage_options', 'log', 'db_log_page');
-    add_submenu_page(null, '编辑条目', '编辑条目', 'manage_options', 'subject_edit', 'db_edit_subject_page');
+    add_menu_page(
+        __('WP DOUBAN Settings', 'wp-douban'),
+        __('WP_DOUBAN', 'wp-douban'),
+        'manage_options',
+        'wpdouban',
+        'db_setting_page',
+        'dashicons-chart-pie'
+    );
+    add_submenu_page('wpdouban', __('WP DOUBAN Settings', 'wp-douban'), __('Settings', 'wp-douban'), 'manage_options', 'wpdouban', 'db_setting_page');
+    add_submenu_page('wpdouban', __('My Items', 'wp-douban'), __('My Items', 'wp-douban'), 'manage_options', 'subject', 'db_subject_page');
+    add_submenu_page('wpdouban', __('All Items', 'wp-douban'), __('All Items', 'wp-douban'), 'manage_options', 'subject_all', 'db_all_subject_page');
+    add_submenu_page('wpdouban', __('Plugin Logs', 'wp-douban'), __('Plugin Logs', 'wp-douban'), 'manage_options', 'log', 'db_log_page');
+    add_submenu_page(null, __('Edit Item', 'wp-douban'), __('Edit Item', 'wp-douban'), 'manage_options', 'subject_edit', 'db_edit_subject_page');
 
     add_action('admin_init', 'db_setting_group');
 }

@@ -1,0 +1,403 @@
+# Copyright (C) 2026 Bigfa
+# This file is distributed under the same license as the WP-Douban plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: WP-Douban 4.5.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wp-douban\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-02-07T10:06:48+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.11.0\n"
+"X-Domain: wp-douban\n"
+
+#. Plugin Name of the plugin
+#: wp-douban.php
+msgid "WP-Douban"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: wp-douban.php
+msgid "https://fatesinger.com/101005"
+msgstr ""
+
+#. Description of the plugin
+#: wp-douban.php
+msgid "🎬 📖 🎵 🎮 manage your movie / book / music / game records"
+msgstr ""
+
+#. Author of the plugin
+#: wp-douban.php
+msgid "Bigfa"
+msgstr ""
+
+#. Author URI of the plugin
+#: wp-douban.php
+msgid "https://fatesinger.com"
+msgstr ""
+
+#: src/functions.php:87
+#: src/setup.php:14
+msgid "Settings"
+msgstr ""
+
+#: src/functions.php:92
+msgid "Items"
+msgstr ""
+
+#: src/functions.php:97
+msgid "Help"
+msgstr ""
+
+#: src/functions.php:156
+#: src/subject-all-table.php:106
+#: src/subject-table.php:116
+msgid "Movies"
+msgstr ""
+
+#: src/functions.php:157
+#: src/subject-all-table.php:108
+#: src/subject-table.php:118
+msgid "Music"
+msgstr ""
+
+#: src/functions.php:158
+#: src/subject-all-table.php:107
+#: src/subject-table.php:117
+msgid "Books"
+msgstr ""
+
+#: src/functions.php:159
+#: src/subject-all-table.php:109
+#: src/subject-table.php:119
+msgid "Games"
+msgstr ""
+
+#: src/functions.php:160
+#: src/subject-all-table.php:110
+#: src/subject-table.php:120
+msgid "Drama"
+msgstr ""
+
+#: src/functions.php:176
+#: src/subject-table.php:235
+#: tpl/tpl-subject-edit.php:79
+msgid "Want to watch"
+msgstr ""
+
+#: src/functions.php:177
+#: src/subject-table.php:237
+#: tpl/tpl-subject-edit.php:78
+msgid "Watching"
+msgstr ""
+
+#: src/functions.php:178
+#: src/subject-table.php:233
+#: tpl/tpl-subject-edit.php:77
+msgid "Watched"
+msgstr ""
+
+#: src/log-table.php:112
+msgid "Clear Logs"
+msgstr ""
+
+#: src/log-table.php:141
+msgid "Type"
+msgstr ""
+
+#: src/log-table.php:142
+msgid "Action"
+msgstr ""
+
+#: src/log-table.php:143
+#: src/subject-table.php:315
+#: tpl/tpl-subject-edit.php:74
+msgid "Status"
+msgstr ""
+
+#: src/log-table.php:144
+msgid "Message"
+msgstr ""
+
+#: src/log-table.php:145
+#: src/subject-table.php:314
+msgid "Date"
+msgstr ""
+
+#: src/setup.php:7
+#: src/setup.php:14
+msgid "WP DOUBAN Settings"
+msgstr ""
+
+#: src/setup.php:8
+msgid "WP_DOUBAN"
+msgstr ""
+
+#: src/setup.php:15
+msgid "My Items"
+msgstr ""
+
+#: src/setup.php:16
+#: src/subject-all-table.php:105
+#: src/subject-table.php:115
+#: tpl/tpl-subject-all.php:2
+msgid "All Items"
+msgstr ""
+
+#: src/setup.php:17
+msgid "Plugin Logs"
+msgstr ""
+
+#: src/setup.php:18
+#: tpl/tpl-subject-edit.php:2
+msgid "Edit Item"
+msgstr ""
+
+#: src/subject-all-table.php:230
+#: src/subject-table.php:243
+#: tpl/tpl-subject-edit.php:23
+msgid "Douban"
+msgstr ""
+
+#: src/subject-all-table.php:263
+#: src/subject-table.php:288
+#: tpl/tpl-subject-edit.php:80
+msgid "Unmark"
+msgstr ""
+
+#: src/subject-all-table.php:263
+msgid "Mark"
+msgstr ""
+
+#: src/subject-all-table.php:275
+msgid "Sync Item"
+msgstr ""
+
+#: src/subject-all-table.php:286
+#: src/subject-table.php:296
+msgid "Edit"
+msgstr ""
+
+#: src/subject-all-table.php:298
+msgid "Delete"
+msgstr ""
+
+#: src/subject-all-table.php:311
+#: src/subject-table.php:309
+#: tpl/tpl-subject-edit.php:49
+msgid "Title"
+msgstr ""
+
+#: src/subject-all-table.php:312
+#: src/subject-table.php:310
+msgid "Poster"
+msgstr ""
+
+#: src/subject-all-table.php:313
+#: tpl/tpl-subject-edit.php:61
+msgid "Douban Rating"
+msgstr ""
+
+#: src/subject-all-table.php:314
+#: src/subject-table.php:313
+msgid "Description"
+msgstr ""
+
+#: src/subject-all-table.php:315
+#: src/subject-table.php:311
+msgid "Source"
+msgstr ""
+
+#: src/subject-table.php:312
+msgid "Rating"
+msgstr ""
+
+#: src/subject-table.php:316
+msgid "My Comment"
+msgstr ""
+
+#: src/subject-table.php:317
+msgid "My Score"
+msgstr ""
+
+#: tpl/tpl-log.php:2
+msgid "Logs"
+msgstr ""
+
+#: tpl/tpl-setting.php:2
+msgid "Plugin Settings"
+msgstr ""
+
+#: tpl/tpl-setting.php:8
+msgid "Usage"
+msgstr ""
+
+#: tpl/tpl-setting.php:11
+msgid "Please read the"
+msgstr ""
+
+#: tpl/tpl-setting.php:12
+msgid "help document"
+msgstr ""
+
+#: tpl/tpl-setting.php:17
+msgid "Display Settings"
+msgstr ""
+
+#: tpl/tpl-setting.php:23
+msgid "Account ID"
+msgstr ""
+
+#: tpl/tpl-setting.php:28
+msgid "Items Per Page"
+msgstr ""
+
+#: tpl/tpl-setting.php:33
+msgid "TMDB API Key"
+msgstr ""
+
+#. translators: %s: Example Douban profile URL.
+#: tpl/tpl-setting.php:49
+msgid "Open your profile URL like <code>%s</code>, and the numeric part is your account ID."
+msgstr ""
+
+#: tpl/tpl-setting.php:52
+msgid "Create your <code>TMDB API Key</code> at https://www.themoviedb.org/settings/api"
+msgstr ""
+
+#: tpl/tpl-setting.php:60
+msgid "Theme Mode"
+msgstr ""
+
+#: tpl/tpl-setting.php:66
+msgid "Light"
+msgstr ""
+
+#: tpl/tpl-setting.php:70
+msgid "Dark"
+msgstr ""
+
+#: tpl/tpl-setting.php:74
+msgid "Follow System"
+msgstr ""
+
+#: tpl/tpl-setting.php:79
+msgid "Custom CSS"
+msgstr ""
+
+#: tpl/tpl-setting.php:82
+msgid "Please input valid CSS."
+msgstr ""
+
+#: tpl/tpl-setting.php:86
+msgid "Show Comment"
+msgstr ""
+
+#: tpl/tpl-setting.php:91
+msgid "Show comment and marked date when rendering a single item if it is marked."
+msgstr ""
+
+#: tpl/tpl-setting.php:95
+msgid "Show Status Tabs"
+msgstr ""
+
+#: tpl/tpl-setting.php:100
+msgid "By default only watched items are shown. Enable this to show want-to-watch / watching / watched."
+msgstr ""
+
+#: tpl/tpl-setting.php:104
+msgid "Render on Home"
+msgstr ""
+
+#: tpl/tpl-setting.php:109
+msgid "By default links are auto-rendered only on single posts. Enable this to render on non-single pages too."
+msgstr ""
+
+#: tpl/tpl-setting.php:113
+msgid "Download Images"
+msgstr ""
+
+#: tpl/tpl-setting.php:118
+msgid "Download poster images to local storage."
+msgstr ""
+
+#: tpl/tpl-setting.php:122
+msgid "Disable Assets"
+msgstr ""
+
+#: tpl/tpl-setting.php:127
+msgid "Do not load plugin bundled CSS/JS."
+msgstr ""
+
+#: tpl/tpl-setting.php:131
+msgid "Douban Movie Top 250"
+msgstr ""
+
+#: tpl/tpl-setting.php:136
+msgid "Enable to sync the Douban movie <code>top250</code> list periodically and show the <code>top250</code> badge on matched items."
+msgstr ""
+
+#: tpl/tpl-setting.php:140
+msgid "Douban Book Top 250"
+msgstr ""
+
+#: tpl/tpl-setting.php:145
+msgid "Enable to sync the Douban book <code>top250</code> list periodically and show the <code>top250</code> badge on matched items."
+msgstr ""
+
+#: tpl/tpl-setting.php:151
+#: tpl/tpl-subject-edit.php:104
+msgid "Save Changes"
+msgstr ""
+
+#: tpl/tpl-subject-all.php:10
+#: tpl/tpl-subject.php:10
+msgid "Search Items"
+msgstr ""
+
+#: tpl/tpl-subject-edit.php:15
+msgid "The item does not exist or has been deleted."
+msgstr ""
+
+#: tpl/tpl-subject-edit.php:31
+msgid "Item"
+msgstr ""
+
+#: tpl/tpl-subject-edit.php:34
+msgid "Poster cached."
+msgstr ""
+
+#: tpl/tpl-subject-edit.php:34
+msgid "Original poster may not be available due to Douban restrictions."
+msgstr ""
+
+#: tpl/tpl-subject-edit.php:43
+msgid "Poster URL"
+msgstr ""
+
+#: tpl/tpl-subject-edit.php:55
+msgid "Subtitle"
+msgstr ""
+
+#: tpl/tpl-subject-edit.php:68
+msgid "Watched At"
+msgstr ""
+
+#: tpl/tpl-subject-edit.php:85
+msgid "Comment"
+msgstr ""
+
+#: tpl/tpl-subject-edit.php:87
+msgid "Write a comment"
+msgstr ""
+
+#: tpl/tpl-subject-edit.php:91
+msgid "Score"
+msgstr ""
+
+#: tpl/tpl-subject.php:2
+msgid "Marked Items"
+msgstr ""

@@ -112,12 +112,12 @@ class Subject_List_Table extends \WP_List_Table
         $hooks_type = isset($_GET['subject_type']) ? sanitize_key(wp_unslash($_GET['subject_type'])) : 'all';
 
         $types = array(
-            'all'      => '所有条目',
-            'movie' => '电影',
-            'book'     => '图书',
-            'music'   => '音乐',
-            'game'   => '游戏',
-            'drama'   => '舞台剧',
+            'all'      => __('All Items', 'wp-douban'),
+            'movie' => __('Movies', 'wp-douban'),
+            'book'     => __('Books', 'wp-douban'),
+            'music'   => __('Music', 'wp-douban'),
+            'game'   => __('Games', 'wp-douban'),
+            'drama'   => __('Drama', 'wp-douban'),
         );
         if (!isset($types[$hooks_type])) {
             $hooks_type = 'all';
@@ -230,17 +230,17 @@ class Subject_List_Table extends \WP_List_Table
         switch ($column_name) {
             case 'status':
                 if ($item->status == 'done') {
-                    return '已看';
+                    return esc_html__('Watched', 'wp-douban');
                 } else if ($item->status == 'mark') {
-                    return '想看';
+                    return esc_html__('Want to watch', 'wp-douban');
                 } else if ($item->status == 'doing') {
-                    return '在看';
+                    return esc_html__('Watching', 'wp-douban');
                 }
 
             case 'poster':
                 return '<img src="' . $this->wpd_save_images($item->douban_id, $item->poster, $item->tmdb_type ? 'tmdb' : '') . '" width="100" referrerpolicy="no-referrer">';
             case 'tmdb_type':
-                return $item->$column_name ? 'TMDB' : '豆瓣';
+                return $item->$column_name ? 'TMDB' : esc_html__('Douban', 'wp-douban');
             case 'name':
             case 'douban_score':
             case 'card_subtitle':
@@ -285,7 +285,7 @@ class Subject_List_Table extends \WP_List_Table
         $link = add_query_arg($link, admin_url('admin.php'));
         $link = wp_nonce_url($link, "wpd_subject_{$event->id}");
 
-        $links[] = "<a href='" . esc_url($link) . "'>取消标记</a>";
+        $links[] = "<a href='" . esc_url($link) . "'>" . esc_html__('Unmark', 'wp-douban') . "</a>";
 
         $link = array(
             'page'                  => 'subject_edit',
@@ -293,7 +293,7 @@ class Subject_List_Table extends \WP_List_Table
             'subject_type'          => rawurlencode($event->type),
         );
         $link = add_query_arg($link, admin_url('admin.php'));
-        $links[] = "<a href='" . esc_url($link) . "'>编辑</a>";
+        $links[] = "<a href='" . esc_url($link) . "'>" . esc_html__('Edit', 'wp-douban') . "</a>";
 
         return $this->row_actions($links);
     }
@@ -306,15 +306,15 @@ class Subject_List_Table extends \WP_List_Table
     public function get_columns()
     {
         return array(
-            'name'     => '标题',
-            'poster' => '封面',
-            'tmdb_type' => '来源',
-            'douban_score' => '评分',
-            'card_subtitle' => '描述',
-            'create_time' => '时间',
-            'status' => '状态',
-            'remark' => '我的短评',
-            'score' => '我的评分'
+            'name'     => __('Title', 'wp-douban'),
+            'poster' => __('Poster', 'wp-douban'),
+            'tmdb_type' => __('Source', 'wp-douban'),
+            'douban_score' => __('Rating', 'wp-douban'),
+            'card_subtitle' => __('Description', 'wp-douban'),
+            'create_time' => __('Date', 'wp-douban'),
+            'status' => __('Status', 'wp-douban'),
+            'remark' => __('My Comment', 'wp-douban'),
+            'score' => __('My Score', 'wp-douban')
         );
     }
 }

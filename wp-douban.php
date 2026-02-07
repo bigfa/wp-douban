@@ -6,12 +6,20 @@ Description: 🎬 📖 🎵 🎮 manage your movie / book / music / game records
 Version: 4.5.0
 Author: Bigfa
 Author URI: https://fatesinger.com
+Text Domain: wp-douban
+Domain Path: /languages
 */
 
 define('WPD_VERSION', '4.5.0');
 define('WPD_URL', plugins_url('', __FILE__));
 define('WPD_PATH', dirname(__FILE__));
 define('WPD_ADMIN_URL', admin_url());
+
+add_action('plugins_loaded', 'wpd_load_textdomain');
+function wpd_load_textdomain()
+{
+    load_plugin_textdomain('wp-douban', false, dirname(plugin_basename(__FILE__)) . '/languages');
+}
 
 ### DB Table Name
 global $wpdb;

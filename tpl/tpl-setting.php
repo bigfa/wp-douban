@@ -1,140 +1,154 @@
 <div class="wrap">
-    <h2>插件设置</h2>
+    <h2><?php echo esc_html__('Plugin Settings', 'wp-douban'); ?></h2>
     <form method="post" action="options.php">
-        <?php
-        settings_fields('db_setting_group');
-        ?>
+        <?php settings_fields('db_setting_group'); ?>
         <table class="form-table">
             <tbody>
                 <tr valign="top">
-                    <th scope="row"><label>使用方法</label></th>
+                    <th scope="row"><label><?php echo esc_html__('Usage', 'wp-douban'); ?></label></th>
                     <td>
-                        <p>请查看<a href="https://fatesinger.com/101050" target="_blank">帮助文章</a></p>
+                        <p>
+                            <?php echo esc_html__('Please read the', 'wp-douban'); ?>
+                            <a href="https://fatesinger.com/101050" target="_blank"><?php echo esc_html__('help document', 'wp-douban'); ?></a>
+                        </p>
                     </td>
                 </tr>
                 <tr valign="top">
-                    <th scope="row"><label>显示设置</label></th>
+                    <th scope="row"><label><?php echo esc_html__('Display Settings', 'wp-douban'); ?></label></th>
                     <td>
                         <ul class="wpd-color-ul">
-                            <?php $color = array(
+                            <?php
+                            $fields = array(
                                 array(
-                                    'title' => '帐号ID',
+                                    'title' => __('Account ID', 'wp-douban'),
                                     'key' => 'id',
                                     'default' => ''
                                 ),
                                 array(
-                                    'title' => '每页显示条目数',
+                                    'title' => __('Items Per Page', 'wp-douban'),
                                     'key' => 'perpage',
                                     'default' => '70'
                                 ),
                                 array(
-                                    'title' => 'TMDB API Key',
+                                    'title' => __('TMDB API Key', 'wp-douban'),
                                     'key' => 'api_key',
                                     'default' => ''
                                 )
                             );
-                            foreach ($color as $key => $V) {
+                            foreach ($fields as $field) :
+                                $value = db_get_setting($field['key']) ? db_get_setting($field['key']) : $field['default'];
                             ?>
                                 <li class="wpd-color-li">
-                                    <code><?php echo $V['title']; ?></code>
-                                    <?php $color = db_get_setting($V['key']) ? db_get_setting($V['key']) : $V['default']; ?>
-                                    <input name="<?php echo db_setting_key($V['key']); ?>" type="text" value="<?php echo $color; ?>" class="regular-text wpd-color-picker" />
+                                    <code><?php echo esc_html($field['title']); ?></code>
+                                    <input name="<?php echo esc_attr(db_setting_key($field['key'])); ?>" type="text" value="<?php echo esc_attr($value); ?>" class="regular-text wpd-color-picker" />
                                 </li>
-                            <?php }
-                            ?>
+                            <?php endforeach; ?>
                         </ul>
-                        <p class="description">点击你的个人主页，URL类似为<code>https://www.douban.com/people/54529369/</code>，<code>54529369</code>就是你的ID</p>
-                        <p class="description">设置<code>TMDB API Key</code>在https://www.themoviedb.org/settings/api 自行申请</p>
+                        <p class="description">
+                            <?php /* translators: %s: Example Douban profile URL. */ ?>
+                            <?php echo wp_kses_post(sprintf(__('Open your profile URL like <code>%s</code>, and the numeric part is your account ID.', 'wp-douban'), 'https://www.douban.com/people/54529369/')); ?>
+                        </p>
+                        <p class="description">
+                            <?php echo wp_kses_post(__('Create your <code>TMDB API Key</code> at https://www.themoviedb.org/settings/api', 'wp-douban')); ?>
+                        </p>
                     </td>
                 </tr>
                 <tr valign="top">
                     <th scope="row">
-                        <label for="<?php echo db_setting_key('dark_mode');
-                                    $mode = db_get_setting("dark_mode") ? db_get_setting("dark_mode") : 'light'; ?>">暗黑模式</label>
+                        <label for="<?php echo esc_attr(db_setting_key('dark_mode'));
+                                    $mode = db_get_setting('dark_mode') ? db_get_setting('dark_mode') : 'light'; ?>">
+                            <?php echo esc_html__('Theme Mode', 'wp-douban'); ?>
+                        </label>
                     </th>
                     <td>
                         <label for="mode-light">
-                            <input type="radio" name="<?php echo db_setting_key('dark_mode'); ?>" id="mode-light" value="light" <?php if ($mode == 'light') echo 'checked="checked"'; ?>>浅色模式</label>
+                            <input type="radio" name="<?php echo esc_attr(db_setting_key('dark_mode')); ?>" id="mode-light" value="light" <?php checked($mode, 'light'); ?>>
+                            <?php echo esc_html__('Light', 'wp-douban'); ?>
+                        </label>
                         <label for="mode-dark">
-                            <input type="radio" name="<?php echo db_setting_key('dark_mode'); ?>" id="mode-dark" value="dark" <?php if ($mode == 'dark') echo 'checked="checked"'; ?>>深色模式</label>
+                            <input type="radio" name="<?php echo esc_attr(db_setting_key('dark_mode')); ?>" id="mode-dark" value="dark" <?php checked($mode, 'dark'); ?>>
+                            <?php echo esc_html__('Dark', 'wp-douban'); ?>
+                        </label>
                         <label for="mode-auto">
-                            <input type="radio" name="<?php echo db_setting_key('dark_mode'); ?>" id="mode-auto" value="auto" <?php if ($mode == 'auto') echo 'checked="checked"'; ?>>跟随系统</label>
-                    </td>
-                </tr>
-                <tr valign="top">
-                    <th scope="row"><label for="url">自定义CSS</label></th>
-                    <td>
-                        <textarea name="<?php echo db_setting_key('css'); ?>" class="wpd-textarea"><?php echo db_get_setting('css'); ?></textarea>
-                        <p class="description">请输入合法的CSS。</p>
-                    </td>
-                </tr>
-                <tr valign="top">
-                    <th scope="row"><label for="<?php echo db_setting_key('show_remark'); ?>">展示短评</label></th>
-                    <td>
-                        <label for="<?php echo db_setting_key('show_remark'); ?>">
-                            <input type="checkbox" name="<?php echo db_setting_key('show_remark'); ?>" id="show_remark" value="1" <?php if (db_get_setting("show_remark")) echo 'checked="checked"'; ?>>
+                            <input type="radio" name="<?php echo esc_attr(db_setting_key('dark_mode')); ?>" id="mode-auto" value="auto" <?php checked($mode, 'auto'); ?>>
+                            <?php echo esc_html__('Follow System', 'wp-douban'); ?>
                         </label>
-                        <p class="description">开启后文章引入单条目时如果标记过则展示短评和标记时间</p>
                     </td>
                 </tr>
                 <tr valign="top">
-                    <th scope="row"><label for="<?php echo db_setting_key('show_type'); ?>">开启分类</label></th>
+                    <th scope="row"><label for="url"><?php echo esc_html__('Custom CSS', 'wp-douban'); ?></label></th>
                     <td>
-                        <label for="<?php echo db_setting_key('show_type'); ?>">
-                            <input type="checkbox" name="<?php echo db_setting_key('show_type'); ?>" id="show_remark" value="1" <?php if (db_get_setting("show_type")) echo 'checked="checked"'; ?>>
-                        </label>
-                        <p class="description">默认只展示看过的条目，开启后会展示想看/在看/看过</p>
+                        <textarea name="<?php echo esc_attr(db_setting_key('css')); ?>" class="wpd-textarea"><?php echo esc_textarea(db_get_setting('css')); ?></textarea>
+                        <p class="description"><?php echo esc_html__('Please input valid CSS.', 'wp-douban'); ?></p>
                     </td>
                 </tr>
                 <tr valign="top">
-                    <th scope="row"><label for="<?php echo db_setting_key('home_render'); ?>">首页渲染</label></th>
+                    <th scope="row"><label for="<?php echo esc_attr(db_setting_key('show_remark')); ?>"><?php echo esc_html__('Show Comment', 'wp-douban'); ?></label></th>
                     <td>
-                        <label for="<?php echo db_setting_key('home_render'); ?>">
-                            <input type="checkbox" name="<?php echo db_setting_key('home_render'); ?>" id="show_remark" value="1" <?php if (db_get_setting("home_render")) echo 'checked="checked"'; ?>>
+                        <label for="<?php echo esc_attr(db_setting_key('show_remark')); ?>">
+                            <input type="checkbox" name="<?php echo esc_attr(db_setting_key('show_remark')); ?>" id="show_remark" value="1" <?php checked(db_get_setting('show_remark')); ?>>
                         </label>
-                        <p class="description">默认只会在文章页自动渲染条目链接，开启后在非文章页也会渲染。</p>
+                        <p class="description"><?php echo esc_html__('Show comment and marked date when rendering a single item if it is marked.', 'wp-douban'); ?></p>
                     </td>
                 </tr>
                 <tr valign="top">
-                    <th scope="row"><label for="<?php echo db_setting_key('download_image'); ?>">下载图片</label></th>
+                    <th scope="row"><label for="<?php echo esc_attr(db_setting_key('show_type')); ?>"><?php echo esc_html__('Show Status Tabs', 'wp-douban'); ?></label></th>
                     <td>
-                        <label for="<?php echo db_setting_key('download_image'); ?>">
-                            <input type="checkbox" name="<?php echo db_setting_key('download_image'); ?>" id="download_image" value="1" <?php if (db_get_setting("download_image")) echo 'checked="checked"'; ?>>
+                        <label for="<?php echo esc_attr(db_setting_key('show_type')); ?>">
+                            <input type="checkbox" name="<?php echo esc_attr(db_setting_key('show_type')); ?>" id="show_type" value="1" <?php checked(db_get_setting('show_type')); ?>>
                         </label>
-                        <p class="description">开启后将封面图片下载到本地。</p>
+                        <p class="description"><?php echo esc_html__('By default only watched items are shown. Enable this to show want-to-watch / watching / watched.', 'wp-douban'); ?></p>
                     </td>
                 </tr>
                 <tr valign="top">
-                    <th scope="row"><label for="<?php echo db_setting_key('disable_scripts'); ?>">静态文件</label></th>
+                    <th scope="row"><label for="<?php echo esc_attr(db_setting_key('home_render')); ?>"><?php echo esc_html__('Render on Home', 'wp-douban'); ?></label></th>
                     <td>
-                        <label for="<?php echo db_setting_key('disable_scripts'); ?>">
-                            <input type="checkbox" name="<?php echo db_setting_key('disable_scripts'); ?>" id="disable_scripts" value="1" <?php if (db_get_setting("disable_scripts")) echo 'checked="checked"'; ?>>
+                        <label for="<?php echo esc_attr(db_setting_key('home_render')); ?>">
+                            <input type="checkbox" name="<?php echo esc_attr(db_setting_key('home_render')); ?>" id="home_render" value="1" <?php checked(db_get_setting('home_render')); ?>>
                         </label>
-                        <p class="description">开启后将不加载插件自带的静态文件。</p>
+                        <p class="description"><?php echo esc_html__('By default links are auto-rendered only on single posts. Enable this to render on non-single pages too.', 'wp-douban'); ?></p>
                     </td>
                 </tr>
                 <tr valign="top">
-                    <th scope="row"><label for="<?php echo db_setting_key('top250'); ?>">豆瓣电影Top250</label></th>
+                    <th scope="row"><label for="<?php echo esc_attr(db_setting_key('download_image')); ?>"><?php echo esc_html__('Download Images', 'wp-douban'); ?></label></th>
                     <td>
-                        <label for="<?php echo db_setting_key('top250'); ?>">
-                            <input type="checkbox" name="<?php echo db_setting_key('top250'); ?>" id="top250" value="1" <?php if (db_get_setting("top250")) echo 'checked="checked"'; ?>>
+                        <label for="<?php echo esc_attr(db_setting_key('download_image')); ?>">
+                            <input type="checkbox" name="<?php echo esc_attr(db_setting_key('download_image')); ?>" id="download_image" value="1" <?php checked(db_get_setting('download_image')); ?>>
                         </label>
-                        <p class="description">开启该选项则会定期同步豆瓣电影<code>top250</code> 清单，当条目在清单中时展示<code>top250</code> 标识。</p>
+                        <p class="description"><?php echo esc_html__('Download poster images to local storage.', 'wp-douban'); ?></p>
                     </td>
                 </tr>
                 <tr valign="top">
-                    <th scope="row"><label for="<?php echo db_setting_key('book_top250'); ?>">豆瓣图书Top250</label></th>
+                    <th scope="row"><label for="<?php echo esc_attr(db_setting_key('disable_scripts')); ?>"><?php echo esc_html__('Disable Assets', 'wp-douban'); ?></label></th>
                     <td>
-                        <label for="<?php echo db_setting_key('top250'); ?>">
-                            <input type="checkbox" name="<?php echo db_setting_key('book_top250'); ?>" id="top250" value="1" <?php if (db_get_setting("book_top250")) echo 'checked="checked"'; ?>>
+                        <label for="<?php echo esc_attr(db_setting_key('disable_scripts')); ?>">
+                            <input type="checkbox" name="<?php echo esc_attr(db_setting_key('disable_scripts')); ?>" id="disable_scripts" value="1" <?php checked(db_get_setting('disable_scripts')); ?>>
                         </label>
-                        <p class="description">开启该选项则会定期同步豆瓣图书<code>top250</code> 清单，当条目在清单中时展示<code>top250</code> 标识。</p>
+                        <p class="description"><?php echo esc_html__('Do not load plugin bundled CSS/JS.', 'wp-douban'); ?></p>
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <th scope="row"><label for="<?php echo esc_attr(db_setting_key('top250')); ?>"><?php echo esc_html__('Douban Movie Top 250', 'wp-douban'); ?></label></th>
+                    <td>
+                        <label for="<?php echo esc_attr(db_setting_key('top250')); ?>">
+                            <input type="checkbox" name="<?php echo esc_attr(db_setting_key('top250')); ?>" id="top250" value="1" <?php checked(db_get_setting('top250')); ?>>
+                        </label>
+                        <p class="description"><?php echo wp_kses_post(__('Enable to sync the Douban movie <code>top250</code> list periodically and show the <code>top250</code> badge on matched items.', 'wp-douban')); ?></p>
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <th scope="row"><label for="<?php echo esc_attr(db_setting_key('book_top250')); ?>"><?php echo esc_html__('Douban Book Top 250', 'wp-douban'); ?></label></th>
+                    <td>
+                        <label for="<?php echo esc_attr(db_setting_key('book_top250')); ?>">
+                            <input type="checkbox" name="<?php echo esc_attr(db_setting_key('book_top250')); ?>" id="book_top250" value="1" <?php checked(db_get_setting('book_top250')); ?>>
+                        </label>
+                        <p class="description"><?php echo wp_kses_post(__('Enable to sync the Douban book <code>top250</code> list periodically and show the <code>top250</code> badge on matched items.', 'wp-douban')); ?></p>
                     </td>
                 </tr>
             </tbody>
         </table>
         <div class="wpd-submit-form">
-            <input type="submit" class="button-primary" name="save" value="<?php _e('Save Changes') ?>" />
+            <input type="submit" class="button-primary" name="save" value="<?php echo esc_attr__('Save Changes', 'wp-douban'); ?>" />
         </div>
     </form>
     <style>
